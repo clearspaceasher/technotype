@@ -1,11 +1,19 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React from "react";
+import ConversationEngine from "@/components/ConversationEngine";
+
+const Index: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen flex items-center justify-center bg-terminal-dark p-4">
+      <div className="w-full max-w-4xl">
+        <header className="mb-6">
+          <h1 className="text-terminal-accent text-xl font-bold mb-1 tracking-wide">OPERATIVE CLASSIFICATION PROTOCOL</h1>
+          <div className="h-1 w-full bg-terminal-accent/30 mb-6"></div>
+          <p className="text-terminal-muted text-sm">
+            TOP SECRET // SCI // NOFORN // ORCON // REL TO COALITION-DARK
+          </p>
+        </header>
+        <ConversationEngine />
       </div>
     </div>
   );
