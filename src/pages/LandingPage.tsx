@@ -90,12 +90,12 @@ const LandingPage: React.FC = () => {
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono text-[20vh] leading-tight text-center"
+                  className="text-terminal-light font-mono text-[20vh] leading-tight text-center whitespace-nowrap"
                   onComplete={handleLineComplete}
                 />
               )}
               {index === currentLine - 1 && (
-                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center">
+                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center whitespace-nowrap">
                   {line.text}
                 </div>
               )}
