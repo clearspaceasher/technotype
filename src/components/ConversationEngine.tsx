@@ -298,15 +298,15 @@ const ConversationEngine: React.FC = () => {
             </div>
           </div>
           
-          {/* Add more flex-grow to push content further down */}
-          <div className="flex-grow flex-grow-[2]"></div>
+          {/* Add a smaller flex-grow to place content closer to the top */}
+          <div className="flex-grow"></div>
           
           <div className="flex justify-center items-center">
             {renderQuestion()}
           </div>
           
           {/* Add another flex-grow to balance the space */}
-          <div className="flex-grow"></div>
+          <div className="flex-grow flex-grow-[2]"></div>
         </>
       ) : (
         renderResults()
