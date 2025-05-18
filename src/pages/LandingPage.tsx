@@ -9,25 +9,29 @@ const LandingPage: React.FC = () => {
   const [showCTA, setShowCTA] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Breaking down longer sentences into smaller chunks
   const lines = [
-    { text: "Your digital behavior is more than habit" },
+    { text: "Your digital behavior" },
+    { text: "is more than habit" },
     { text: "— it's a reflection" },
-    { text: "This short experience helps you map your mind through the lens of screentime." },
-    { text: "It's not just screentime." },
-    { text: "It's self-time." }
+    { text: "This short experience" },
+    { text: "helps you map your mind" },
+    { text: "through the lens of screentime" },
+    { text: "It's not just screentime" },
+    { text: "It's self-time" }
   ];
 
   useEffect(() => {
     // Handle animation sequence completions
     if (currentLine >= lines.length) {
-      setTimeout(() => setShowCTA(true), 500);
+      setTimeout(() => setShowCTA(true), 800); // Slightly longer delay before showing CTA
     }
   }, [currentLine]);
 
   const handleLineComplete = () => {
     setTimeout(() => {
       setCurrentLine(prev => prev + 1);
-    }, 800); // Delay between lines
+    }, 1200); // Increased delay between lines for slower pacing
   };
 
   return (
@@ -44,7 +48,7 @@ const LandingPage: React.FC = () => {
                 y: currentLine === index ? 0 : 
                   (currentLine > index ? -50 : 50),
               }}
-              transition={{ duration: 0.7, ease: "easeInOut" }}
+              transition={{ duration: 0.9, ease: "easeInOut" }} // Slower transition
               style={{ 
                 position: 'absolute',
                 maxWidth: "90vw",
@@ -55,7 +59,7 @@ const LandingPage: React.FC = () => {
               {index === currentLine && (
                 <AnimatedText
                   text={line.text}
-                  speed={30}
+                  speed={50} // Slower typing speed
                   className="text-terminal-light font-mono text-[7vh] md:text-[10vh] lg:text-[15vh] leading-tight text-center"
                   onComplete={handleLineComplete}
                 />
@@ -73,7 +77,7 @@ const LandingPage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: showCTA ? 1 : 0, scale: showCTA ? 1 : 0.9 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.8 }} // Slower CTA animation
           className="mt-16 mb-8"
         >
           {showCTA && (

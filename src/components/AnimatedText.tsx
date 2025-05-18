@@ -12,10 +12,10 @@ interface AnimatedTextProps {
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({
   text,
-  speed = 25,
+  speed = 50, // Default to slower typing speed
   className = "",
   onComplete,
-  delay = 0,
+  delay = 200, // Added slightly longer default delay
 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,8 +49,12 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       return () => clearTimeout(timeout);
     } else if (isTyping && currentIndex === text.length) {
       // Animation complete
+      timeout = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 300); // Added pause after typing finishes
       setIsTyping(false);
-      if (onComplete) onComplete();
+      
+      return () => clearTimeout(timeout);
     }
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
