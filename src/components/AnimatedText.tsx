@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface AnimatedTextProps {
   text: string;
@@ -7,6 +7,7 @@ interface AnimatedTextProps {
   className?: string;
   onComplete?: () => void;
   delay?: number;
+  singleLine?: boolean; // New prop to enable single line mode
 }
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({
@@ -15,17 +16,44 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   className = "",
   onComplete,
   delay = 0,
+  singleLine = false, // Default to false for backward compatibility
 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
+  const [fontSize, setFontSize] = useState(20); // Default font size in vh
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     // Reset state when text prop changes
     setDisplayedText("");
     setCurrentIndex(0);
     setIsTyping(false);
+    setFontSize(20); // Reset font size
   }, [text]);
+
+  // Dynamic font sizing effect
+  useEffect(() => {
+    if (!singleLine || !containerRef.current || !textRef.current) return;
+    
+    // Calculate and adjust font size to fit container width
+    const adjustFontSize = () => {
+      if (!containerRef.current || !textRef.current) return;
+      
+      const containerWidth = containerRef.current.clientWidth;
+      const textWidth = textRef.current.scrollWidth;
+      
+      // If text is wider than container, reduce font size
+      if (textWidth > containerWidth) {
+        const ratio = containerWidth / textWidth;
+        // Gentle adjustment to avoid jittery changes
+        setFontSize(prev => Math.max(prev * ratio * 0.98, 1)); // Minimum 1vh
+      }
+    };
+
+    adjustFontSize();
+  }, [displayedText, singleLine]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -53,9 +81,11 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     }
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
+  const dynamicStyle = singleLine ? { fontSize: `${fontSize}vh`, whiteSpace: 'nowrap' } : {};
+
   return (
-    <div className={className}>
-      <span>{displayedText}</span>
+    <div className={className} ref={containerRef} style={{ overflow: 'hidden', width: '100%' }}>
+      <span ref={textRef} style={dynamicStyle}>{displayedText}</span>
       {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>
   );

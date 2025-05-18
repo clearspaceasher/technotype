@@ -24,9 +24,7 @@ const LandingPage: React.FC = () => {
   }, [currentLine]);
 
   const handleLineComplete = () => {
-    setTimeout(() => {
-      setCurrentLine(prev => prev + 1);
-    }, 800); // Delay between lines
+    setCurrentLine(prev => prev + 1);
   };
 
   return (
@@ -47,20 +45,22 @@ const LandingPage: React.FC = () => {
               style={{ 
                 position: 'absolute',
                 transform: `rotate(${line.rotation}deg)`,
-                maxWidth: "90vw",
+                width: "90vw",
                 display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
               }}
+              className="flex justify-center"
             >
               {index === currentLine && (
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono text-[20vh] leading-tight text-center"
+                  className="text-terminal-light font-mono leading-tight text-center"
                   onComplete={handleLineComplete}
+                  singleLine={true} // Enable single line mode
                 />
               )}
               {index === currentLine - 1 && (
-                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center opacity-0">
+                <div className="text-terminal-light font-mono leading-tight text-center opacity-0">
                   {line.text}
                 </div>
               )}
