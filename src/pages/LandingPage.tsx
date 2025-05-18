@@ -92,11 +92,11 @@ const LandingPage: React.FC = () => {
               <motion.span 
                 className="relative"
                 initial={{ x: 0 }}
-                animate={{ x: [0, 5, 0] }}
+                animate={{ x: [0, 8, 0] }}
                 transition={{ 
                   repeat: Infinity, 
                   repeatType: "reverse",
-                  duration: 1.5 
+                  duration: 2
                 }}
               >
                 <span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</span>
