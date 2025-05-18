@@ -5,18 +5,21 @@ interface ConversationOptionProps {
   text: string;
   onClick: () => void;
   disabled?: boolean;
+  selected?: boolean;
 }
 
 const ConversationOption: React.FC<ConversationOptionProps> = ({ 
   text,
   onClick,
-  disabled = false 
+  disabled = false,
+  selected = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <button
       className={`px-4 py-2 border border-terminal-accent ${
+        selected ? "bg-terminal-accent/30" : 
         isHovered ? "bg-terminal-accent/20" : "bg-transparent"
       } text-left transition-all duration-200 ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"

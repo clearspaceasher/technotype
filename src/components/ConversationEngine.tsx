@@ -7,105 +7,96 @@ import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { motion } from "framer-motion";
 
-// Digital wellbeing quiz questions
+// Digital wellbeing quiz questions - simplified to two options
 const quizQuestions = [
   {
-    id: "morning-routine",
-    question: "First thing you reach for in the morning?",
-    type: "multiple-choice",
+    id: "tech-morning",
+    question: "First thing in the morning?",
+    type: "this-or-that",
     options: [
-      { id: "phone", text: "Phone" },
-      { id: "coffee", text: "Coffee" },
-      { id: "stretch", text: "Stretch" },
-      { id: "journal", text: "Journal" }
+      { id: "digital", text: "Check notifications" },
+      { id: "analog", text: "Offline ritual" }
+    ]
+  },
+  {
+    id: "flow-state",
+    question: "When deeply focused, notifications make you feel:",
+    type: "this-or-that",
+    options: [
+      { id: "disrupted", text: "Disrupted" },
+      { id: "connected", text: "Connected" }
+    ]
+  },
+  {
+    id: "digital-presence",
+    question: "Your online identity is:",
+    type: "this-or-that",
+    options: [
+      { id: "curated", text: "Carefully curated" },
+      { id: "authentic", text: "Authentic mirror" }
+    ]
+  },
+  {
+    id: "tech-breaks",
+    question: "Ideal break from screens:",
+    type: "this-or-that",
+    options: [
+      { id: "nature", text: "Nature immersion" },
+      { id: "social", text: "Social interaction" }
     ]
   },
   {
     id: "notification-feeling",
-    question: "When your phone buzzes with notifications, you feel:",
+    question: "Notification sounds make you:",
     type: "slider",
     min: 0,
     max: 100,
     step: 1,
-    labels: ["Anxious", "Curious", "Excited"]
-  },
-  {
-    id: "digital-break",
-    question: "Your ideal digital break is:",
-    type: "multiple-choice",
-    options: [
-      { id: "nature", text: "Nature escape" },
-      { id: "social", text: "In-person socializing" },
-      { id: "analog-hobby", text: "Analog hobby" },
-      { id: "different-screen", text: "Different screen activity" }
-    ]
-  },
-  {
-    id: "missed-notifications",
-    question: "Missing notifications makes you feel:",
-    type: "multiple-choice",
-    options: [
-      { id: "relieved", text: "Relieved" },
-      { id: "anxious", text: "Anxious" },
-      { id: "indifferent", text: "Indifferent" }
-    ]
+    labels: ["Anxious", "Excited"]
   },
   {
     id: "tech-balance",
-    question: "Your tech-life balance feels:",
+    question: "Your relationship with technology:",
+    type: "this-or-that",
+    options: [
+      { id: "tool", text: "It's a tool" },
+      { id: "extension", text: "It's an extension of me" }
+    ]
+  },
+  {
+    id: "unplug-feelings",
+    question: "Being unreachable makes you feel:",
+    type: "this-or-that",
+    options: [
+      { id: "free", text: "Liberated" },
+      { id: "anxious", text: "Anxious" }
+    ]
+  },
+  {
+    id: "content-preference",
+    question: "You prefer content that is:",
+    type: "this-or-that",
+    options: [
+      { id: "mindful", text: "Thought-provoking" },
+      { id: "escape", text: "Escapist" }
+    ]
+  },
+  {
+    id: "tech-innovation",
+    question: "New tech makes you feel:",
     type: "slider",
     min: 0,
     max: 100,
     step: 1,
-    labels: ["Out of control", "Manageable", "Perfect"]
+    labels: ["Skeptical", "Excited"]
   },
   {
-    id: "digital-consumption",
-    question: "You prefer digital content that is:",
-    type: "multiple-choice",
-    options: [
-      { id: "educational", text: "Educational" },
-      { id: "entertaining", text: "Entertaining" },
-      { id: "mindless", text: "Mindless escape" },
-      { id: "creative", text: "Creative inspiration" }
-    ]
-  },
-  {
-    id: "screen-time",
-    question: "Your ideal daily screen time:",
-    type: "slider",
-    min: 0,
-    max: 100,
-    step: 1,
-    labels: ["Minimal", "Moderate", "Unlimited"]
-  },
-  {
-    id: "social-validation",
-    question: "Online social validation feels:",
+    id: "digital-future",
+    question: "The increasingly digital future is:",
     type: "this-or-that",
     options: [
-      { id: "meaningful", text: "Meaningful" },
-      { id: "empty", text: "Empty" }
-    ]
-  },
-  {
-    id: "tech-attitude",
-    question: "Technology primarily makes your life:",
-    type: "this-or-that",
-    options: [
-      { id: "better", text: "Better" },
-      { id: "complicated", text: "Complicated" }
-    ]
-  },
-  {
-    id: "final-question",
-    question: "Your digital self is:",
-    type: "multiple-choice",
-    options: [
-      { id: "authentic", text: "Authentic me" },
-      { id: "curated", text: "Curated version" },
-      { id: "separate", text: "Separate entity" },
-      { id: "extension", text: "Natural extension" }
+      { id: "promising", text: "Full of promise" },
+      { id: "concerning", text: "Concerning" }
     ]
   }
 ];
@@ -122,11 +113,7 @@ const ConversationEngine: React.FC = () => {
     if (currentQuestion < quizQuestions.length) {
       setSelectedOption(null);
       setSliderValue(50);
-      setIsTyping(true);
-      const timer = setTimeout(() => {
-        setIsTyping(false);
-      }, 1000);
-      return () => clearTimeout(timer);
+      setIsTyping(false); // Remove typing delay
     }
   }, [currentQuestion]);
 
@@ -135,14 +122,14 @@ const ConversationEngine: React.FC = () => {
     setAnswers({ ...answers, [questionId]: option });
     setSelectedOption(option);
 
-    // Add delay before moving to next question
+    // Move to next question with minimal delay
     setTimeout(() => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
         setIsFinished(true);
       }
-    }, 800);
+    }, 300); // Reduced delay for smoother experience
   };
 
   const handleSliderChange = (value: number[]) => {
@@ -153,18 +140,14 @@ const ConversationEngine: React.FC = () => {
     const questionId = quizQuestions[currentQuestion].id;
     setAnswers({ ...answers, [questionId]: sliderValue });
 
-    // Add delay before moving to next question
+    // Move to next question with minimal delay
     setTimeout(() => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
         setIsFinished(true);
       }
-    }, 800);
-  };
-
-  const handleThisOrThat = (option: string) => {
-    handleOptionSelect(option);
+    }, 300); // Reduced delay for smoother experience
   };
 
   const renderQuestion = () => {
@@ -177,32 +160,39 @@ const ConversationEngine: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }} // Faster transition for smoother feel
         className="mb-8"
       >
         <h2 className="text-terminal-light text-2xl md:text-3xl mb-6">
           <AnimatedText
             text={question.question}
-            speed={30}
+            speed={20} // Faster typing speed
             className="text-terminal-light"
           />
         </h2>
 
-        {question.type === "multiple-choice" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {question.type === "this-or-that" && (
+          <div className="flex flex-col md:flex-row gap-6 justify-center">
             {question.options.map((option) => (
-              <ConversationOption
+              <motion.div 
                 key={option.id}
-                text={option.text}
-                onClick={() => handleOptionSelect(option.id)}
-                selected={selectedOption === option.id}
-              />
+                className="flex-1"
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <ConversationOption
+                  key={option.id}
+                  text={option.text}
+                  onClick={() => handleOptionSelect(option.id)}
+                  selected={selectedOption === option.id}
+                />
+              </motion.div>
             ))}
           </div>
         )}
 
         {question.type === "slider" && (
-          <div className="my-12">
+          <div className="my-8">
             <div className="flex justify-between mb-2 text-terminal-light opacity-80">
               {question.labels.map((label, index) => {
                 const position = index / (question.labels.length - 1) * 100;
@@ -230,30 +220,6 @@ const ConversationEngine: React.FC = () => {
             </Button>
           </div>
         )}
-
-        {question.type === "this-or-that" && (
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            {question.options.map((option) => (
-              <motion.div 
-                key={option.id}
-                className="flex-1"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <button
-                  onClick={() => handleThisOrThat(option.id)}
-                  className={`w-full p-6 md:p-8 rounded-lg border-2 ${
-                    selectedOption === option.id 
-                      ? "border-terminal-accent bg-terminal-dark/50" 
-                      : "border-terminal-light/30 hover:border-terminal-light/50"
-                  } transition-all`}
-                >
-                  <span className="text-2xl text-terminal-light">{option.text}</span>
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        )}
       </motion.div>
     );
   };
@@ -268,7 +234,7 @@ const ConversationEngine: React.FC = () => {
         <h2 className="text-terminal-light text-3xl mb-6">
           <AnimatedText
             text="Digital Self Exploration Complete"
-            speed={30}
+            speed={20}
             className="text-terminal-accent"
           />
         </h2>
@@ -278,7 +244,6 @@ const ConversationEngine: React.FC = () => {
         <p className="text-terminal-light text-lg mb-12">
           Your digital wellbeing profile is being synthesized...
         </p>
-        {/* This would connect to a results page in a full implementation */}
         <Button
           onClick={() => window.location.href = '/'}
           className="bg-terminal-accent text-black hover:bg-terminal-accent/80"
@@ -294,10 +259,7 @@ const ConversationEngine: React.FC = () => {
       <div className="px-4 py-6 md:p-8">
         {!isFinished ? (
           <>
-            <div className="flex justify-between items-center mb-8">
-              <span className="text-terminal-light">
-                Question {currentQuestion + 1} of {quizQuestions.length}
-              </span>
+            <div className="flex justify-center mb-8">
               <div className="flex gap-1">
                 {Array.from({ length: quizQuestions.length }).map((_, i) => (
                   <div
