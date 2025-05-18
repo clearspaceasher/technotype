@@ -48,8 +48,9 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
         
         // Calculate and report progress (0-100%)
         if (onProgress) {
-          // Calculate progress as we type each character to center the last typed character
-          const progress = (currentIndex + 1) / text.length * 100;
+          // Calculate and send progress - this will be used to follow the text
+          // Use a progressive value that increases as we type each character
+          const progress = (currentIndex + 1) / text.length * 50;  // Use 50% as max to keep text on screen
           onProgress(progress);
         }
       }, speed);

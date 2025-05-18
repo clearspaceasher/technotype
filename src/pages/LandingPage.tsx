@@ -89,7 +89,6 @@ const LandingPage: React.FC = () => {
                 opacity: currentLine === index ? 1 : 0,
                 y: currentLine === index ? 0 : 
                   (currentLine > index ? getExitAnimation(index, index + 1).y : getEntryAnimation(line.rotation).y),
-                rotate: currentLine === index ? line.rotation : 0,
               }}
               exit={getExitAnimation(index, index + 1)}
               transition={{ duration: 0.7, ease: "easeInOut" }}
@@ -98,11 +97,10 @@ const LandingPage: React.FC = () => {
                 transformOrigin: line.rotation === 90 ? 'bottom center' : line.rotation === -90 ? 'top center' : 'center',
                 maxWidth: "90vw",
                 display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none',
-                // Make the transform apply dynamically based on text progress
-                // Offset by the start position of the current line to create continuity
-                transform: `translateX(${
+                // Apply rotation immediately (not animated)
+                transform: `rotate(${line.rotation}deg) translateX(${
                   currentLine === index 
-                    ? `-${(textProgress * (index === 0 ? 1 : 2))}%` 
+                    ? `-${(textProgress)}%` 
                     : getStartingPosition(index) + 'px'
                 })`,
               }}
