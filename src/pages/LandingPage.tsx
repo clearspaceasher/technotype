@@ -33,6 +33,11 @@ const LandingPage: React.FC = () => {
     setCurrentLine(prev => prev + 1);
   };
 
+  useEffect(() => {
+    // For debugging - log current line index
+    console.log("Current line:", currentLine);
+  }, [currentLine]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">

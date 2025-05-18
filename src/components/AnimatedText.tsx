@@ -48,12 +48,13 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       
       return () => clearTimeout(timeout);
     } else if (isTyping && currentIndex === text.length) {
-      // Animation complete
+      // Animation complete - ensure callback is called
       timeout = setTimeout(() => {
+        console.log("Animation complete, calling onComplete");
         if (onComplete) onComplete();
       }, 300); // Added pause after typing finishes
-      setIsTyping(false);
       
+      setIsTyping(false);
       return () => clearTimeout(timeout);
     }
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
