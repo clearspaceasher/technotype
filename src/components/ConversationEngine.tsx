@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Terminal from "./Terminal";
 import ConversationOption from "./ConversationOption";
@@ -209,7 +208,7 @@ const ConversationEngine: React.FC = () => {
         transition={{ duration: 0.2 }}
         className="mb-8"
       >
-        <h2 className="text-terminal-light text-2xl md:text-3xl mb-8">
+        <h2 className="text-terminal-light text-2xl md:text-3xl mb-12">
           <AnimatedText
             text={question.question}
             speed={20}
@@ -218,7 +217,7 @@ const ConversationEngine: React.FC = () => {
         </h2>
 
         {optionsVisible && (
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <div className="flex flex-col md:flex-row gap-16 justify-center">
             {question.options.map((option, index) => (
               <motion.div 
                 key={option.id}
@@ -299,8 +298,8 @@ const ConversationEngine: React.FC = () => {
             </div>
           </div>
           
-          {/* Add flex-grow to push content down and center it vertically */}
-          <div className="flex-grow"></div>
+          {/* Add more flex-grow to push content further down */}
+          <div className="flex-grow flex-grow-[2]"></div>
           
           <div className="flex justify-center items-center">
             {renderQuestion()}

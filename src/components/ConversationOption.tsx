@@ -25,9 +25,9 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
   // Even more aggressive figure-8 animation pattern, mirrored for each option
   const figure8Motion = {
     x: isLeftOption 
-      ? [0, 20, 30, 20, 0, -20, -30, -20, 0]
-      : [0, -20, -30, -20, 0, 20, 30, 20, 0],
-    y: [0, -15, 0, 15, 0, -15, 0, 15, 0]
+      ? [0, 30, 50, 30, 0, -30, -50, -30, 0]
+      : [0, -30, -50, -30, 0, 30, 50, 30, 0],
+    y: [0, -20, 0, 20, 0, -20, 0, 20, 0]
   };
 
   return (
@@ -42,10 +42,9 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
       onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled}
-      // Always animate, not just on hover
       animate={figure8Motion}
       transition={{
-        duration: 2.2, // Even faster animation for more aggressive sway
+        duration: 2.0, // Even faster animation for more aggressive sway
         ease: "easeInOut",
         times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
         repeat: Infinity,
