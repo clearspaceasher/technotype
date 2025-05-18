@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AnimatedText from "@/components/AnimatedText";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -54,7 +54,7 @@ const LandingPage: React.FC = () => {
   return (
     <AnimatePresence>
       <motion.div 
-        className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4 overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center bg-gray-800 p-4 overflow-hidden"
         initial={{ opacity: 1 }}
         animate={isAnimating ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -112,7 +112,7 @@ const LandingPage: React.FC = () => {
               <a 
                 href="/quiz" 
                 onClick={handleCtaClick}
-                className="group flex items-center justify-center gap-3 text-2xl md:text-3xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
+                className="group flex items-center justify-center gap-3 text-2xl md:text-4xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
               >
                 <motion.div 
                   className="flex items-center"
