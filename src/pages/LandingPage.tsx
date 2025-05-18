@@ -47,6 +47,7 @@ const LandingPage: React.FC = () => {
     setIsAnimating(true);
     // Wait for zoom animation to complete before navigating
     setTimeout(() => {
+      document.body.style.backgroundColor = "black";
       navigate('/quiz');
     }, 1000);
   };
@@ -55,9 +56,9 @@ const LandingPage: React.FC = () => {
     <AnimatePresence>
       <motion.div 
         className="min-h-screen flex flex-col items-center justify-center bg-black p-4 overflow-hidden"
-        initial={{ opacity: 1 }}
-        animate={isAnimating ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 1, backgroundColor: "black" }}
+        animate={isAnimating ? { scale: 20, opacity: 0, backgroundColor: "black" } : { scale: 1, opacity: 1, backgroundColor: "black" }}
+        exit={{ opacity: 0, backgroundColor: "black" }}
         transition={{ 
           duration: isAnimating ? 1 : 0.5,
           ease: "easeInOut" 

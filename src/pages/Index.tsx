@@ -1,9 +1,19 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import ConversationEngine from "@/components/ConversationEngine";
 import { motion } from "framer-motion";
 
 const Index: React.FC = () => {
+  useEffect(() => {
+    // Set background to black when component mounts
+    document.body.style.backgroundColor = "black";
+    
+    // Cleanup function to reset background color when component unmounts
+    return () => {
+      document.body.style.backgroundColor = "";
+    };
+  }, []);
+  
   return (
     <motion.div 
       className="min-h-screen flex items-center justify-center bg-black p-4"
