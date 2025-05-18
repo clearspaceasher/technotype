@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
-  const [typingCTA, setTypingCTA] = useState<boolean>(false);
 
   const lines = [
     { text: "Your digital behavior is more than habit", rotation: 0, bold: false },
@@ -30,12 +29,8 @@ const LandingPage: React.FC = () => {
     }, 800); // Delay between lines
   };
 
-  const handleCTAFadeInComplete = () => {
-    setTypingCTA(true);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
         {/* Animated text lines */}
         <div className="relative w-full max-w-5xl flex-1 flex items-center justify-center">
@@ -81,14 +76,13 @@ const LandingPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="mt-16 mb-8"
-            onAnimationComplete={handleCTAFadeInComplete}
           >
             <Link 
               to="/quiz" 
               className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
             >
-              <motion.span 
-                className="relative"
+              <motion.div 
+                className="flex items-center"
                 initial={{ x: 0 }}
                 animate={{ x: [0, 8, 0] }}
                 transition={{ 
@@ -97,18 +91,14 @@ const LandingPage: React.FC = () => {
                   duration: 2
                 }}
               >
-                <span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</span>
-                {typingCTA ? (
-                  <AnimatedText
-                    text="explore your mind"
-                    speed={30}
-                    className="text-terminal-accent"
-                    bold={false}
-                  />
-                ) : (
-                  <span className="invisible">explore your mind</span>
-                )}
-              </motion.span>
+                <motion.span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</motion.span>
+                <AnimatedText
+                  text="explore your mind"
+                  speed={30}
+                  className="text-terminal-accent"
+                  bold={false}
+                />
+              </motion.div>
             </Link>
           </motion.div>
         )}
