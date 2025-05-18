@@ -54,7 +54,7 @@ const LandingPage: React.FC = () => {
   return (
     <AnimatePresence>
       <motion.div 
-        className="min-h-screen flex flex-col items-center justify-center bg-gray-800 p-4 overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden"
         initial={{ opacity: 1 }}
         animate={isAnimating ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -87,13 +87,13 @@ const LandingPage: React.FC = () => {
                   <AnimatedText
                     text={line.text}
                     speed={30}
-                    className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center`}
+                    className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center break-words whitespace-normal`}
                     onComplete={handleLineComplete}
                     bold={line.bold}
                   />
                 )}
                 {index === currentLine - 1 && (
-                  <div className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center opacity-0 whitespace-nowrap ${line.bold ? 'font-bold' : ''}`}>
+                  <div className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center opacity-0 break-words whitespace-normal ${line.bold ? 'font-bold' : ''}`}>
                     {line.text}
                   </div>
                 )}
