@@ -22,12 +22,12 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   
-  // More aggressive figure-8 animation pattern, mirrored for each option
+  // Even more aggressive figure-8 animation pattern, mirrored for each option
   const figure8Motion = {
     x: isLeftOption 
-      ? [0, 15, 25, 15, 0, -15, -25, -15, 0]
-      : [0, -15, -25, -15, 0, 15, 25, 15, 0],
-    y: [0, -10, 0, 10, 0, -10, 0, 10, 0]
+      ? [0, 20, 30, 20, 0, -20, -30, -20, 0]
+      : [0, -20, -30, -20, 0, 20, 30, 20, 0],
+    y: [0, -15, 0, 15, 0, -15, 0, 15, 0]
   };
 
   return (
@@ -42,9 +42,10 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
       onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled}
-      animate={isHovered || selected ? figure8Motion : {}}
+      // Always animate, not just on hover
+      animate={figure8Motion}
       transition={{
-        duration: 2.5, // Faster animation for more aggressive sway
+        duration: 2.2, // Even faster animation for more aggressive sway
         ease: "easeInOut",
         times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
         repeat: Infinity,

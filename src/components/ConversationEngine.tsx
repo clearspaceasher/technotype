@@ -209,7 +209,7 @@ const ConversationEngine: React.FC = () => {
         transition={{ duration: 0.2 }}
         className="mb-8"
       >
-        <h2 className="text-terminal-light text-2xl md:text-3xl mb-6">
+        <h2 className="text-terminal-light text-2xl md:text-3xl mb-8">
           <AnimatedText
             text={question.question}
             speed={20}
@@ -283,10 +283,10 @@ const ConversationEngine: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light">
+    <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light flex flex-col">
       {!isFinished ? (
         <>
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-8 mt-4">
             <div className="flex gap-1 max-w-md w-full">
               {Array.from({ length: quizQuestions.length }).map((_, i) => (
                 <div
@@ -298,7 +298,16 @@ const ConversationEngine: React.FC = () => {
               ))}
             </div>
           </div>
-          {renderQuestion()}
+          
+          {/* Add flex-grow to push content down and center it vertically */}
+          <div className="flex-grow"></div>
+          
+          <div className="flex justify-center items-center">
+            {renderQuestion()}
+          </div>
+          
+          {/* Add another flex-grow to balance the space */}
+          <div className="flex-grow"></div>
         </>
       ) : (
         renderResults()
