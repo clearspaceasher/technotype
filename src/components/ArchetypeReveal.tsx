@@ -103,38 +103,47 @@ const ArchetypeReveal: React.FC<ArchetypeRevealProps> = ({ archetype, archetypeD
   );
 };
 
-// Component for the spinning archetypes
+// Component for the spinning archetypes - CSGO loot crate style
 const SpinningArchetype: React.FC<{ index: number; isTarget: boolean }> = ({ index, isTarget }) => {
-  // Different colors for each spinning icon
+  // Colors for each spinning icon
   const colors = ["#4ADE80", "#F43F5E", "#9b87f5", "#0FA0CE"];
+  
+  // Rainbow path animation for CSGO loot crate style
+  const rainbowPath = {
+    x: [
+      // Starting from left, moving to right in a rainbow arch
+      -150, -100, -50, 0, 50, 100, 150,
+      // Coming back from right to left
+      100, 50, 0, -50, -100, -150,
+      // Final position based on whether this is the target
+      isTarget ? 0 : (index % 2 === 0 ? -200 : 200)
+    ],
+    y: [
+      // Rainbow arch up and down
+      0, -40, -60, -70, -60, -40, 0,
+      // Coming back with another arch
+      -40, -60, -70, -60, -40, 0,
+      // Final position
+      isTarget ? 0 : -100
+    ],
+    scale: [
+      // Pulsing scale for dynamism
+      1, 1.1, 1.2, 1.1, 1, 0.9, 0.8, 0.9, 1, 1.1, 1.2, 1.1, 1,
+      // Final scale
+      isTarget ? 1.2 : 0.5
+    ],
+    opacity: isTarget ? 1 : [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.7, 0],
+  };
   
   return (
     <motion.div
       className="absolute w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
       style={{ backgroundColor: colors[index % colors.length] }}
-      animate={{
-        x: [
-          Math.sin(index * Math.PI/2) * 100,
-          Math.sin(index * Math.PI/2 + Math.PI) * 100,
-          Math.sin(index * Math.PI/2 + Math.PI * 2) * 100,
-          Math.sin(index * Math.PI/2 + Math.PI * 3) * 100,
-          isTarget ? 0 : (Math.sin(index * Math.PI/2) * 200)
-        ],
-        y: [
-          Math.cos(index * Math.PI/2) * 100,
-          Math.cos(index * Math.PI/2 + Math.PI) * 100,
-          Math.cos(index * Math.PI/2 + Math.PI * 2) * 100,
-          Math.cos(index * Math.PI/2 + Math.PI * 3) * 100,
-          isTarget ? 0 : (Math.cos(index * Math.PI/2) * 200)
-        ],
-        scale: isTarget ? [1, 1, 1, 1, 1.2] : [1, 1, 1, 1, 0.5],
-        opacity: isTarget ? 1 : [1, 1, 1, 1, 0],
-        rotate: [0, 180, 360, 540, 720],
-      }}
+      animate={rainbowPath}
       transition={{
         duration: 3,
         ease: "easeInOut",
-        times: [0, 0.25, 0.5, 0.75, 1],
+        times: [0, 0.08, 0.16, 0.25, 0.33, 0.41, 0.5, 0.58, 0.66, 0.75, 0.83, 0.91, 1],
       }}
     >
       {String.fromCharCode(65 + index)}

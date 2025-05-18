@@ -219,7 +219,7 @@ const ConversationEngine: React.FC = () => {
 
         {optionsVisible && (
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            {question.options.map((option) => (
+            {question.options.map((option, index) => (
               <motion.div 
                 key={option.id}
                 className="flex-1"
@@ -233,6 +233,7 @@ const ConversationEngine: React.FC = () => {
                   onClick={() => handleOptionSelect(option.id)}
                   selected={selectedOption === option.id}
                   animateText={true}
+                  isLeftOption={index === 0} // Left option for first, right for second
                 />
               </motion.div>
             ))}
