@@ -45,18 +45,18 @@ const LandingPage: React.FC = () => {
               style={{ 
                 position: 'absolute',
                 transform: `rotate(${line.rotation}deg)`,
-                width: "90vw",
-                display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
+                width: "85%", // Slightly reduced to ensure there's some margin
+                display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'flex' : 'none',
+                justifyContent: 'center'
               }}
-              className="flex justify-center"
             >
               {index === currentLine && (
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono leading-tight text-center"
+                  className="text-terminal-light font-mono leading-tight text-center w-full"
                   onComplete={handleLineComplete}
-                  singleLine={true} // Enable single line mode
+                  singleLine={true}
                 />
               )}
               {index === currentLine - 1 && (

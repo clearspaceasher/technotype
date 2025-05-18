@@ -33,7 +33,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     setFontSize(20); // Reset font size
   }, [text]);
 
-  // Dynamic font sizing effect
+  // Dynamic font sizing effect - now responds to each character addition
   useEffect(() => {
     if (!singleLine || !containerRef.current || !textRef.current) return;
     
@@ -44,15 +44,22 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       const containerWidth = containerRef.current.clientWidth;
       const textWidth = textRef.current.scrollWidth;
       
-      // If text is wider than container, reduce font size
       if (textWidth > containerWidth) {
-        const ratio = containerWidth / textWidth;
-        // Gentle adjustment to avoid jittery changes
-        setFontSize(prev => Math.max(prev * ratio * 0.98, 1)); // Minimum 1vh
+        const ratio = containerWidth / textWidth * 0.95; // Use 95% of the ratio for a bit of margin
+        setFontSize(current => Math.max(current * ratio, 3)); // Ensure minimum size
       }
     };
 
+    // Run font adjustment after each character is added
     adjustFontSize();
+    
+    // Also set up a resize observer for container size changes
+    const resizeObserver = new ResizeObserver(adjustFontSize);
+    resizeObserver.observe(containerRef.current);
+    
+    return () => {
+      if (containerRef.current) resizeObserver.disconnect();
+    };
   }, [displayedText, singleLine]);
 
   useEffect(() => {
