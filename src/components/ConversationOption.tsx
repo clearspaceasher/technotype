@@ -21,6 +21,7 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
   isLeftOption = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   
   // Even more aggressive figure-8 animation pattern, mirrored for each option
   const figure8Motion = {
@@ -28,6 +29,20 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
       ? [0, 30, 50, 30, 0, -30, -50, -30, 0]
       : [0, -30, -50, -30, 0, 30, 50, 30, 0],
     y: [0, -20, 0, 20, 0, -20, 0, 20, 0]
+  };
+
+  // Handle click with animation
+  const handleClick = () => {
+    if (disabled) return;
+    
+    // Set clicked state to trigger animation
+    setIsClicked(true);
+    
+    // Reset after animation completes
+    setTimeout(() => {
+      setIsClicked(false);
+      onClick();
+    }, 150); // Animation duration
   };
 
   return (
@@ -38,7 +53,7 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
       } ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       } mt-4 w-full`}
-      onClick={disabled ? undefined : onClick}
+      onClick={disabled ? undefined : handleClick}
       onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled}
@@ -50,8 +65,16 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
         repeat: Infinity,
         repeatType: "loop"
       }}
+      whileTap={{ scale: 0.95 }}
     >
-      <div className="flex items-center justify-center space-x-2">
+      <motion.div 
+        className="flex items-center justify-center space-x-2"
+        animate={isClicked ? { 
+          scale: [1, 0.95, 1.05, 1],
+          opacity: [1, 0.8, 1] 
+        } : {}}
+        transition={{ duration: 0.15 }}
+      >
         <div className="text-2xl md:text-3xl flex-1">
           {animateText ? (
             <AnimatedText 
@@ -67,7 +90,17 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
             </span>
           )}
         </div>
-      </div>
+      </motion.div>
+      
+      {/* Ripple effect overlay */}
+      {isClicked && (
+        <motion.div
+          className="absolute inset-0 rounded-md bg-terminal-accent"
+          initial={{ opacity: 0.3, scale: 0.8 }}
+          animate={{ opacity: 0, scale: 1.5 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
     </motion.button>
   );
 };
