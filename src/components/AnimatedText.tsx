@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 
 interface AnimatedTextProps {
@@ -48,7 +47,9 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
         
         // Calculate and report progress (0-100%)
         if (onProgress) {
-          const progress = Math.min(100, Math.floor((currentIndex + 1) / text.length * 100));
+          // Calculate progress based on visible portion of the text
+          // This value determines how much we translate the text to keep the last typed character centered
+          const progress = Math.min(50, Math.floor((currentIndex + 1) / text.length * 100));
           onProgress(progress);
         }
       }, speed);

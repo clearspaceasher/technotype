@@ -71,17 +71,17 @@ const LandingPage: React.FC = () => {
                 opacity: currentLine === index ? 1 : 0,
                 y: currentLine === index ? 0 : 
                   (currentLine > index ? getExitAnimation(index, index + 1).y : getEntryAnimation(line.rotation).y),
+                rotate: currentLine === index ? line.rotation : 0,
               }}
               exit={getExitAnimation(index, index + 1)}
               transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute',
                 transformOrigin: line.rotation === 90 ? 'bottom center' : line.rotation === -90 ? 'top center' : 'center',
-                transform: `rotate(${currentLine === index ? line.rotation : 0}deg)`,
                 maxWidth: "90vw",
                 display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none',
-                // Add transform style to set the horizontal position based on text progress
-                translateX: currentLine === index && textProgress > 0 ? `calc(-${textProgress}% + 50%)` : 0
+                // Make the transform apply dynamically based on text progress
+                transform: `translateX(${currentLine === index ? `-${textProgress}%` : '0%'})`,
               }}
               className="flex justify-center items-center"
             >
