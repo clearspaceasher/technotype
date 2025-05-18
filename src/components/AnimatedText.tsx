@@ -55,10 +55,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     }
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
-  const getBoldClass = bold ? "font-bold" : "";
+  const fontClassNames = bold ? "font-bold" : "";
 
   return (
-    <div className={`${className} ${getBoldClass}`}>
+    <div className={`${className} ${fontClassNames} overflow-hidden whitespace-nowrap max-w-full`}>
       <span>{displayedText}</span>
       {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>

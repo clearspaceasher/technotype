@@ -49,18 +49,19 @@ const LandingPage: React.FC = () => {
                 maxWidth: "90%",
                 display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
               }}
+              className="w-full px-4"
             >
               {index === currentLine && (
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono text-2xl md:text-3xl lg:text-4xl tracking-tight text-center"
+                  className="text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center whitespace-nowrap"
                   onComplete={handleLineComplete}
                   bold={line.bold}
                 />
               )}
               {index === currentLine - 1 && (
-                <div className={`text-terminal-light font-mono text-2xl md:text-3xl lg:text-4xl tracking-tight text-center opacity-0 ${line.bold ? 'font-bold' : ''}`}>
+                <div className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center opacity-0 whitespace-nowrap ${line.bold ? 'font-bold' : ''}`}>
                   {line.text}
                 </div>
               )}
@@ -86,7 +87,7 @@ const LandingPage: React.FC = () => {
           {showCTA && (
             <Link 
               to="/quiz" 
-              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
+              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 animate-pulse"
             >
               <motion.span 
                 className="relative"
