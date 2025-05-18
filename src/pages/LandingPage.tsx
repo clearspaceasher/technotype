@@ -10,9 +10,9 @@ const LandingPage: React.FC = () => {
 
   const lines = [
     { text: "Your digital behavior is more than habit", rotation: 0 },
-    { text: "— it's a reflection", rotation: 90 },
+    { text: "— it's a reflection", rotation: 0 },
     { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0 },
-    { text: "It's not just screentime.", rotation: -90 },
+    { text: "It's not just screentime.", rotation: 0 },
     { text: "It's self-time.", rotation: 0 }
   ];
 
@@ -29,30 +29,12 @@ const LandingPage: React.FC = () => {
     }, 800); // Delay between lines
   };
 
-  // Function to determine exit direction based on upcoming rotation
-  const getExitDirection = (currentIdx: number) => {
-    if (currentIdx >= lines.length - 1) return { y: -100 };
+  // Function to determine exit animation for current line
+  const getExitAnimation = (currentIdx: number) => {
+    if (currentIdx >= lines.length - 1) return { y: -100, opacity: 0 };
     
-    const nextRotation = lines[currentIdx + 1].rotation;
-    
-    if (nextRotation === 90) return { y: -100, x: 0 }; // Exit upward
-    if (nextRotation === -90) return { y: 100, x: 0 }; // Exit downward
-    
-    // For level text, exit opposite to where the previous came from
-    if (currentIdx > 0) {
-      const prevRotation = lines[currentIdx].rotation;
-      if (prevRotation === 90) return { y: -100, x: 0 }; // Continue upward movement
-      if (prevRotation === -90) return { y: 100, x: 0 }; // Continue downward movement
-    }
-    
-    return { y: -100 }; // Default exit upward
-  };
-  
-  // Function to determine entry direction based on rotation
-  const getEntryDirection = (rotation: number) => {
-    if (rotation === 90) return { y: 100, x: 0 }; // Enter from bottom
-    if (rotation === -90) return { y: -100, x: 0 }; // Enter from top
-    return { y: 100, x: 0 }; // Default enter from bottom
+    // Exit in the opposite direction of the new line's entry
+    return { y: 100, opacity: 0 }; 
   };
 
   return (
@@ -65,26 +47,24 @@ const LandingPage: React.FC = () => {
               key={`line-${index}`}
               initial={{ 
                 opacity: 0, 
-                ...getEntryDirection(line.rotation)
+                y: 100
               }}
               animate={{ 
                 opacity: currentLine === index ? 1 : 0,
                 y: currentLine === index ? 0 : 
-                  (currentLine > index ? getExitDirection(index).y : getEntryDirection(line.rotation).y),
-                x: currentLine === index ? 0 : 
-                  (currentLine > index ? getExitDirection(index).x : getEntryDirection(line.rotation).x)
+                  (currentLine > index ? -100 : 100)
               }}
               exit={{ 
                 opacity: 0, 
-                ...getExitDirection(index)
+                y: getExitAnimation(index).y
               }}
               transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute',
-                transform: `rotate(${line.rotation}deg)`,
                 maxWidth: "90vw",
                 display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none'
               }}
+              className="flex justify-center items-center"
             >
               {index === currentLine && (
                 <AnimatedText
