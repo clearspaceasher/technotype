@@ -4,15 +4,13 @@ import Terminal from "./Terminal";
 import ConversationOption from "./ConversationOption";
 import AnimatedText from "./AnimatedText";
 import { Button } from "./ui/button";
-import { Slider } from "./ui/slider";
 import { motion } from "framer-motion";
 
-// Digital wellbeing quiz questions - simplified to two options
+// Digital wellbeing quiz questions - all "this-or-that" type only
 const quizQuestions = [
   {
     id: "tech-morning",
     question: "First thing in the morning?",
-    type: "this-or-that",
     options: [
       { id: "digital", text: "Check notifications" },
       { id: "analog", text: "Offline ritual" }
@@ -21,7 +19,6 @@ const quizQuestions = [
   {
     id: "flow-state",
     question: "When deeply focused, notifications make you feel:",
-    type: "this-or-that",
     options: [
       { id: "disrupted", text: "Disrupted" },
       { id: "connected", text: "Connected" }
@@ -30,7 +27,6 @@ const quizQuestions = [
   {
     id: "digital-presence",
     question: "Your online identity is:",
-    type: "this-or-that",
     options: [
       { id: "curated", text: "Carefully curated" },
       { id: "authentic", text: "Authentic mirror" }
@@ -39,25 +35,14 @@ const quizQuestions = [
   {
     id: "tech-breaks",
     question: "Ideal break from screens:",
-    type: "this-or-that",
     options: [
       { id: "nature", text: "Nature immersion" },
       { id: "social", text: "Social interaction" }
     ]
   },
   {
-    id: "notification-feeling",
-    question: "Notification sounds make you:",
-    type: "slider",
-    min: 0,
-    max: 100,
-    step: 1,
-    labels: ["Anxious", "Excited"]
-  },
-  {
     id: "tech-balance",
     question: "Your relationship with technology:",
-    type: "this-or-that",
     options: [
       { id: "tool", text: "It's a tool" },
       { id: "extension", text: "It's an extension of me" }
@@ -66,7 +51,6 @@ const quizQuestions = [
   {
     id: "unplug-feelings",
     question: "Being unreachable makes you feel:",
-    type: "this-or-that",
     options: [
       { id: "free", text: "Liberated" },
       { id: "anxious", text: "Anxious" }
@@ -75,25 +59,14 @@ const quizQuestions = [
   {
     id: "content-preference",
     question: "You prefer content that is:",
-    type: "this-or-that",
     options: [
       { id: "mindful", text: "Thought-provoking" },
       { id: "escape", text: "Escapist" }
     ]
   },
   {
-    id: "tech-innovation",
-    question: "New tech makes you feel:",
-    type: "slider",
-    min: 0,
-    max: 100,
-    step: 1,
-    labels: ["Skeptical", "Excited"]
-  },
-  {
     id: "digital-future",
     question: "The increasingly digital future is:",
-    type: "this-or-that",
     options: [
       { id: "promising", text: "Full of promise" },
       { id: "concerning", text: "Concerning" }
@@ -106,14 +79,22 @@ const ConversationEngine: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isTyping, setIsTyping] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [sliderValue, setSliderValue] = useState(50);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [optionsVisible, setOptionsVisible] = useState(false);
 
   useEffect(() => {
     if (currentQuestion < quizQuestions.length) {
       setSelectedOption(null);
-      setSliderValue(50);
-      setIsTyping(false); // Remove typing delay
+      setOptionsVisible(false);
+      setIsTyping(true);
+      
+      // Show options after question finishes typing
+      const timer = setTimeout(() => {
+        setOptionsVisible(true);
+        setIsTyping(false);
+      }, quizQuestions[currentQuestion].question.length * 20 + 300);
+      
+      return () => clearTimeout(timer);
     }
   }, [currentQuestion]);
 
@@ -132,24 +113,6 @@ const ConversationEngine: React.FC = () => {
     }, 300); // Reduced delay for smoother experience
   };
 
-  const handleSliderChange = (value: number[]) => {
-    setSliderValue(value[0]);
-  };
-
-  const handleSliderComplete = () => {
-    const questionId = quizQuestions[currentQuestion].id;
-    setAnswers({ ...answers, [questionId]: sliderValue });
-
-    // Move to next question with minimal delay
-    setTimeout(() => {
-      if (currentQuestion < quizQuestions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-      } else {
-        setIsFinished(true);
-      }
-    }, 300); // Reduced delay for smoother experience
-  };
-
   const renderQuestion = () => {
     if (currentQuestion >= quizQuestions.length) return null;
     
@@ -157,67 +120,39 @@ const ConversationEngine: React.FC = () => {
     
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }} // Faster transition for smoother feel
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
         className="mb-8"
       >
         <h2 className="text-terminal-light text-2xl md:text-3xl mb-6">
           <AnimatedText
             text={question.question}
-            speed={20} // Faster typing speed
+            speed={20}
             className="text-terminal-light"
           />
         </h2>
 
-        {question.type === "this-or-that" && (
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
+        {optionsVisible && (
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
             {question.options.map((option) => (
               <motion.div 
                 key={option.id}
                 className="flex-1"
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
               >
                 <ConversationOption
                   key={option.id}
                   text={option.text}
                   onClick={() => handleOptionSelect(option.id)}
                   selected={selectedOption === option.id}
+                  animateText={true}
                 />
               </motion.div>
             ))}
-          </div>
-        )}
-
-        {question.type === "slider" && (
-          <div className="my-8">
-            <div className="flex justify-between mb-2 text-terminal-light opacity-80">
-              {question.labels.map((label, index) => {
-                const position = index / (question.labels.length - 1) * 100;
-                return (
-                  <span key={index} style={{ position: 'relative', left: `${position}%`, transform: 'translateX(-50%)' }}>
-                    {label}
-                  </span>
-                );
-              })}
-            </div>
-            <Slider
-              defaultValue={[50]}
-              max={100}
-              step={1}
-              value={[sliderValue]}
-              onValueChange={handleSliderChange}
-              onValueCommit={handleSliderComplete}
-              className="my-6"
-            />
-            <Button
-              onClick={handleSliderComplete}
-              className="mt-4 bg-terminal-accent text-black hover:bg-terminal-accent/80"
-            >
-              Continue
-            </Button>
           </div>
         )}
       </motion.div>
@@ -239,10 +174,20 @@ const ConversationEngine: React.FC = () => {
           />
         </h2>
         <p className="text-terminal-light text-lg mb-8">
-          Thank you for exploring your relationship with technology.
+          <AnimatedText
+            text="Thank you for exploring your relationship with technology."
+            speed={20}
+            delay={800}
+            className="text-terminal-light"
+          />
         </p>
         <p className="text-terminal-light text-lg mb-12">
-          Your digital wellbeing profile is being synthesized...
+          <AnimatedText
+            text="Your digital wellbeing profile is being synthesized..."
+            speed={20}
+            delay={1600}
+            className="text-terminal-light"
+          />
         </p>
         <Button
           onClick={() => window.location.href = '/'}
@@ -255,29 +200,27 @@ const ConversationEngine: React.FC = () => {
   };
 
   return (
-    <Terminal>
-      <div className="px-4 py-6 md:p-8">
-        {!isFinished ? (
-          <>
-            <div className="flex justify-center mb-8">
-              <div className="flex gap-1">
-                {Array.from({ length: quizQuestions.length }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1 w-4 rounded-full ${
-                      i <= currentQuestion ? "bg-terminal-accent" : "bg-gray-600"
-                    }`}
-                  />
-                ))}
-              </div>
+    <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light">
+      {!isFinished ? (
+        <>
+          <div className="flex justify-center mb-8">
+            <div className="flex gap-1 max-w-md w-full">
+              {Array.from({ length: quizQuestions.length }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1 flex-1 rounded-full ${
+                    i <= currentQuestion ? "bg-terminal-accent" : "bg-gray-800"
+                  }`}
+                />
+              ))}
             </div>
-            {renderQuestion()}
-          </>
-        ) : (
-          renderResults()
-        )}
-      </div>
-    </Terminal>
+          </div>
+          {renderQuestion()}
+        </>
+      ) : (
+        renderResults()
+      )}
+    </div>
   );
 };
 

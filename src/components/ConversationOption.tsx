@@ -1,18 +1,21 @@
 
 import React, { useState } from "react";
+import AnimatedText from "./AnimatedText";
 
 interface ConversationOptionProps {
   text: string;
   onClick: () => void;
   disabled?: boolean;
   selected?: boolean;
+  animateText?: boolean;
 }
 
 const ConversationOption: React.FC<ConversationOptionProps> = ({ 
   text,
   onClick,
   disabled = false,
-  selected = false
+  selected = false,
+  animateText = false
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -31,7 +34,16 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
     >
       <div className="flex items-center space-x-2">
         <span className="text-terminal-accent">&gt;</span>
-        <span>{text}</span>
+        {animateText ? (
+          <AnimatedText 
+            text={text} 
+            speed={15}
+            className="text-terminal-light"
+            noWrap={true}
+          />
+        ) : (
+          <span>{text}</span>
+        )}
       </div>
     </button>
   );

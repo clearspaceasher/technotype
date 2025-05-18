@@ -16,14 +16,12 @@ const Index: React.FC = () => {
   
   return (
     <motion.div 
-      className="min-h-screen flex items-center justify-center bg-black p-4"
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
+      className="min-h-screen bg-black"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <div className="w-full max-w-5xl">
-        <ConversationEngine />
-      </div>
+      <ConversationEngine />
     </motion.div>
   );
 };
