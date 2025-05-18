@@ -29,6 +29,17 @@ const LandingPage: React.FC = () => {
     }, 800); // Delay between lines
   };
 
+  // Figure 8 animation path
+  const figure8Path = {
+    x: [0, 20, 0, -20, 0],
+    y: [0, -10, 0, -10, 0],
+    transition: {
+      duration: 8,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
@@ -79,17 +90,11 @@ const LandingPage: React.FC = () => {
           >
             <Link 
               to="/quiz" 
-              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
+              className="group flex items-center justify-center gap-3 text-2xl md:text-3xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
             >
               <motion.div 
                 className="flex items-center"
-                initial={{ x: 0 }}
-                animate={{ x: [0, 8, 0] }}
-                transition={{ 
-                  repeat: Infinity, 
-                  repeatType: "reverse",
-                  duration: 2
-                }}
+                animate={figure8Path}
               >
                 <motion.span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</motion.span>
                 <AnimatedText
