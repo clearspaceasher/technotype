@@ -87,13 +87,14 @@ const LandingPage: React.FC = () => {
                   <AnimatedText
                     text={line.text}
                     speed={30}
-                    className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center break-words whitespace-normal`}
+                    className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center`}
                     onComplete={handleLineComplete}
                     bold={line.bold}
+                    noWrap={true}
                   />
                 )}
                 {index === currentLine - 1 && (
-                  <div className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center opacity-0 break-words whitespace-normal ${line.bold ? 'font-bold' : ''}`}>
+                  <div className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center opacity-0 ${line.bold ? 'font-bold' : ''} whitespace-nowrap`}>
                     {line.text}
                   </div>
                 )}
@@ -124,6 +125,7 @@ const LandingPage: React.FC = () => {
                     speed={30}
                     className="text-terminal-accent"
                     bold={false}
+                    noWrap={true}
                   />
                 </motion.div>
               </a>

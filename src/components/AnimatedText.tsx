@@ -8,6 +8,7 @@ interface AnimatedTextProps {
   onComplete?: () => void;
   delay?: number;
   bold?: boolean;
+  noWrap?: boolean;
 }
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({
@@ -17,6 +18,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   onComplete,
   delay = 0,
   bold = false,
+  noWrap = false,
 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,9 +58,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
   const fontClassNames = bold ? "font-bold" : "";
+  const wrapClassNames = noWrap ? "whitespace-nowrap" : "break-words whitespace-normal";
 
   return (
-    <div className={`${className} ${fontClassNames} break-words whitespace-normal w-full text-center mx-auto`}>
+    <div className={`${className} ${fontClassNames} ${wrapClassNames} w-full text-center mx-auto`}>
       <span>{displayedText}</span>
       {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>
