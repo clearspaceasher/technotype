@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import AnimatedText from "@/components/AnimatedText";
 import { motion } from "framer-motion";
@@ -7,12 +7,14 @@ import { motion } from "framer-motion";
 const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
+  const [textProgress, setTextProgress] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const lines = [
     { text: "Your digital behavior is more than habit", rotation: 0 },
-    { text: "— it's a reflection", rotation: 0 },
+    { text: "— it's a reflection", rotation: 90 },
     { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0 },
-    { text: "It's not just screentime.", rotation: 0 },
+    { text: "It's not just screentime.", rotation: -90 },
     { text: "It's self-time.", rotation: 0 }
   ];
 
@@ -23,46 +25,63 @@ const LandingPage: React.FC = () => {
     }
   }, [currentLine]);
 
+  // This function updates the typing progress (0-100%)
+  const handleTextProgress = (progress: number) => {
+    setTextProgress(progress);
+  };
+
   const handleLineComplete = () => {
+    setTextProgress(0);
     setTimeout(() => {
       setCurrentLine(prev => prev + 1);
     }, 800); // Delay between lines
   };
 
   // Function to determine exit animation for current line
-  const getExitAnimation = (currentIdx: number) => {
+  const getExitAnimation = (currentIdx: number, nextIdx: number) => {
     if (currentIdx >= lines.length - 1) return { y: -100, opacity: 0 };
     
-    // Exit in the opposite direction of the new line's entry
-    return { y: 100, opacity: 0 }; 
+    // Get the rotation of the next line to determine exit direction
+    const nextRotation = nextIdx < lines.length ? lines[nextIdx].rotation : 0;
+    
+    if (nextRotation === 90) return { y: -100, opacity: 0 }; // Exit upward
+    if (nextRotation === -90) return { y: 100, opacity: 0 }; // Exit downward
+    
+    // Default exit upward
+    return { y: -100, opacity: 0 };
+  };
+
+  // Function to determine entry animation based on rotation
+  const getEntryAnimation = (rotation: number) => {
+    if (rotation === 90) return { y: 100, opacity: 0 }; // Enter from bottom
+    if (rotation === -90) return { y: -100, opacity: 0 }; // Enter from top
+    return { y: 100, opacity: 0 }; // Default enter from bottom
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
         {/* Animated text lines */}
-        <div className="relative w-full flex-1 flex items-center justify-center">
+        <div className="relative w-full flex-1 flex items-center justify-center" ref={containerRef}>
           {lines.map((line, index) => (
             <motion.div
               key={`line-${index}`}
-              initial={{ 
-                opacity: 0, 
-                y: 100
-              }}
+              initial={getEntryAnimation(line.rotation)}
               animate={{ 
                 opacity: currentLine === index ? 1 : 0,
                 y: currentLine === index ? 0 : 
-                  (currentLine > index ? -100 : 100)
+                  (currentLine > index ? getExitAnimation(index, index + 1).y : getEntryAnimation(line.rotation).y),
               }}
-              exit={{ 
-                opacity: 0, 
-                y: getExitAnimation(index).y
-              }}
+              exit={getExitAnimation(index, index + 1)}
               transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute',
+                transformOrigin: line.rotation === 90 ? 'bottom center' : line.rotation === -90 ? 'top center' : 'center',
+                transform: `rotate(${currentLine === index ? line.rotation : 0}deg)`,
                 maxWidth: "90vw",
-                display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none'
+                display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none',
+                // Add transform style to set the horizontal position based on text progress
+                translateX: currentLine === index && textProgress > 0 ? `calc(-${textProgress}% + 50%)` : 0
               }}
               className="flex justify-center items-center"
             >
@@ -72,6 +91,7 @@ const LandingPage: React.FC = () => {
                   speed={30}
                   className="text-terminal-light font-mono text-[20vh] leading-tight text-center whitespace-nowrap"
                   onComplete={handleLineComplete}
+                  onProgress={handleTextProgress}
                 />
               )}
               {index === currentLine - 1 && (

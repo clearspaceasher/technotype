@@ -6,6 +6,7 @@ interface AnimatedTextProps {
   speed?: number;
   className?: string;
   onComplete?: () => void;
+  onProgress?: (progress: number) => void;
   delay?: number;
 }
 
@@ -14,6 +15,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   speed = 25,
   className = "",
   onComplete,
+  onProgress,
   delay = 0,
 }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -43,6 +45,12 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
+        
+        // Calculate and report progress (0-100%)
+        if (onProgress) {
+          const progress = Math.min(100, Math.floor((currentIndex + 1) / text.length * 100));
+          onProgress(progress);
+        }
       }, speed);
       
       return () => clearTimeout(timeout);
@@ -51,7 +59,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       setIsTyping(false);
       if (onComplete) onComplete();
     }
-  }, [text, speed, currentIndex, isTyping, onComplete, delay]);
+  }, [text, speed, currentIndex, isTyping, onComplete, delay, onProgress]);
 
   return (
     <div className={className}>
