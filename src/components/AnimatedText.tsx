@@ -7,6 +7,7 @@ interface AnimatedTextProps {
   className?: string;
   onComplete?: () => void;
   delay?: number;
+  bold?: boolean;
 }
 
 const AnimatedText: React.FC<AnimatedTextProps> = ({
@@ -15,11 +16,12 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   className = "",
   onComplete,
   delay = 0,
+  bold = false,
 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-
+  
   useEffect(() => {
     // Reset state when text prop changes
     setDisplayedText("");
@@ -53,8 +55,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     }
   }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
+  const getBoldClass = bold ? "font-bold" : "";
+
   return (
-    <div className={className}>
+    <div className={`${className} ${getBoldClass}`}>
       <span>{displayedText}</span>
       {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>

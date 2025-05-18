@@ -9,11 +9,11 @@ const LandingPage: React.FC = () => {
   const [showCTA, setShowCTA] = useState<boolean>(false);
 
   const lines = [
-    { text: "Your digital behavior is more than habit", rotation: 0 },
-    { text: "— it's a reflection", rotation: 90 },
-    { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0 },
-    { text: "It's not just screentime.", rotation: -90 },
-    { text: "It's self-time.", rotation: 0 }
+    { text: "Your digital behavior is more than habit", rotation: 0, bold: false },
+    { text: "— it's a reflection", rotation: 0, bold: true },
+    { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0, bold: false },
+    { text: "It's not just screentime.", rotation: 0, bold: false },
+    { text: "It's self-time.", rotation: 0, bold: true }
   ];
 
   useEffect(() => {
@@ -33,21 +33,20 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
         {/* Animated text lines */}
-        <div className="relative w-full flex-1 flex items-center justify-center">
+        <div className="relative w-full max-w-4xl flex-1 flex items-center justify-center">
           {lines.map((line, index) => (
             <motion.div
               key={`line-${index}`}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ 
                 opacity: currentLine === index ? 1 : 0,
-                y: currentLine === index ? 0 : (currentLine > index ? -50 : 50)
+                y: currentLine === index ? 0 : (currentLine > index ? -20 : 20)
               }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.5 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
               style={{ 
                 position: 'absolute',
-                transform: `rotate(${line.rotation}deg)`,
-                maxWidth: "90vw",
+                maxWidth: "90%",
                 display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
               }}
             >
@@ -55,12 +54,13 @@ const LandingPage: React.FC = () => {
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono text-[20vh] leading-tight text-center"
+                  className="text-terminal-light font-mono text-2xl md:text-3xl lg:text-4xl tracking-tight text-center"
                   onComplete={handleLineComplete}
+                  bold={line.bold}
                 />
               )}
               {index === currentLine - 1 && (
-                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center opacity-0">
+                <div className={`text-terminal-light font-mono text-2xl md:text-3xl lg:text-4xl tracking-tight text-center opacity-0 ${line.bold ? 'font-bold' : ''}`}>
                   {line.text}
                 </div>
               )}
@@ -71,19 +71,36 @@ const LandingPage: React.FC = () => {
         {/* CTA Button */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: showCTA ? 1 : 0, scale: showCTA ? 1 : 0.9 }}
-          transition={{ duration: 0.5 }}
+          animate={{ 
+            opacity: showCTA ? 1 : 0, 
+            scale: showCTA ? 1 : 0.9,
+            y: showCTA ? 0 : 20
+          }}
+          transition={{ 
+            duration: 0.5,
+            type: "spring",
+            stiffness: 100
+          }}
           className="mt-16 mb-8"
         >
           {showCTA && (
             <Link 
               to="/quiz" 
-              className="group flex items-center justify-center gap-3 text-[8vh] text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
+              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
             >
-              <span className="relative">
+              <motion.span 
+                className="relative"
+                initial={{ x: 0 }}
+                animate={{ x: [0, 5, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  repeatType: "reverse",
+                  duration: 1.5 
+                }}
+              >
                 <span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</span>
                 explore your mind
-              </span>
+              </motion.span>
             </Link>
           )}
         </motion.div>
