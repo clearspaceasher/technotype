@@ -29,9 +29,8 @@ const LandingPage: React.FC = () => {
   }, [currentLine]);
 
   const handleLineComplete = () => {
-    setTimeout(() => {
-      setCurrentLine(prev => prev + 1);
-    }, 1200); // Increased delay between lines for slower pacing
+    // Ensure we're advancing to the next line
+    setCurrentLine(prev => prev + 1);
   };
 
   return (
