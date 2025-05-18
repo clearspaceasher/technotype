@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
+  const [typingCTA, setTypingCTA] = useState<boolean>(false);
 
   const lines = [
     { text: "Your digital behavior is more than habit", rotation: 0, bold: false },
@@ -14,7 +15,6 @@ const LandingPage: React.FC = () => {
     { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0, bold: false },
     { text: "It's not just screentime.", rotation: 0, bold: false },
     { text: "It's self-time.", rotation: 0, bold: true },
-    { text: "explore your mind", rotation: 0, bold: false, isCTA: true }
   ];
 
   useEffect(() => {
@@ -28,6 +28,10 @@ const LandingPage: React.FC = () => {
     setTimeout(() => {
       setCurrentLine(prev => prev + 1);
     }, 800); // Delay between lines
+  };
+
+  const handleCTAFadeInComplete = () => {
+    setTypingCTA(true);
   };
 
   return (
@@ -56,7 +60,7 @@ const LandingPage: React.FC = () => {
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center ${line.isCTA ? 'text-terminal-accent' : ''}`}
+                  className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center`}
                   onComplete={handleLineComplete}
                   bold={line.bold}
                 />
@@ -77,6 +81,7 @@ const LandingPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="mt-16 mb-8"
+            onAnimationComplete={handleCTAFadeInComplete}
           >
             <Link 
               to="/quiz" 
@@ -93,7 +98,16 @@ const LandingPage: React.FC = () => {
                 }}
               >
                 <span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</span>
-                explore your mind
+                {typingCTA ? (
+                  <AnimatedText
+                    text="explore your mind"
+                    speed={30}
+                    className="text-terminal-accent"
+                    bold={false}
+                  />
+                ) : (
+                  <span className="invisible">explore your mind</span>
+                )}
               </motion.span>
             </Link>
           </motion.div>
