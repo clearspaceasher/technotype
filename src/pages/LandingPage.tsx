@@ -29,6 +29,32 @@ const LandingPage: React.FC = () => {
     }, 800); // Delay between lines
   };
 
+  // Function to determine exit direction based on upcoming rotation
+  const getExitDirection = (currentIdx: number) => {
+    if (currentIdx >= lines.length - 1) return { y: -100 };
+    
+    const nextRotation = lines[currentIdx + 1].rotation;
+    
+    if (nextRotation === 90) return { y: -100, x: 0 }; // Exit upward
+    if (nextRotation === -90) return { y: 100, x: 0 }; // Exit downward
+    
+    // For level text, exit opposite to where the previous came from
+    if (currentIdx > 0) {
+      const prevRotation = lines[currentIdx].rotation;
+      if (prevRotation === 90) return { y: -100, x: 0 }; // Continue upward movement
+      if (prevRotation === -90) return { y: 100, x: 0 }; // Continue downward movement
+    }
+    
+    return { y: -100 }; // Default exit upward
+  };
+  
+  // Function to determine entry direction based on rotation
+  const getEntryDirection = (rotation: number) => {
+    if (rotation === 90) return { y: 100, x: 0 }; // Enter from bottom
+    if (rotation === -90) return { y: -100, x: 0 }; // Enter from top
+    return { y: 100, x: 0 }; // Default enter from bottom
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
@@ -37,18 +63,27 @@ const LandingPage: React.FC = () => {
           {lines.map((line, index) => (
             <motion.div
               key={`line-${index}`}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ 
+                opacity: 0, 
+                ...getEntryDirection(line.rotation)
+              }}
               animate={{ 
                 opacity: currentLine === index ? 1 : 0,
-                y: currentLine === index ? 0 : (currentLine > index ? -50 : 50)
+                y: currentLine === index ? 0 : 
+                  (currentLine > index ? getExitDirection(index).y : getEntryDirection(line.rotation).y),
+                x: currentLine === index ? 0 : 
+                  (currentLine > index ? getExitDirection(index).x : getEntryDirection(line.rotation).x)
               }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.5 }}
+              exit={{ 
+                opacity: 0, 
+                ...getExitDirection(index)
+              }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute',
                 transform: `rotate(${line.rotation}deg)`,
                 maxWidth: "90vw",
-                display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
+                display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none'
               }}
             >
               {index === currentLine && (
@@ -60,7 +95,7 @@ const LandingPage: React.FC = () => {
                 />
               )}
               {index === currentLine - 1 && (
-                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center opacity-0">
+                <div className="text-terminal-light font-mono text-[20vh] leading-tight text-center">
                   {line.text}
                 </div>
               )}
