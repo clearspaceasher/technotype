@@ -54,7 +54,7 @@ const LandingPage: React.FC = () => {
   return (
     <AnimatePresence>
       <motion.div 
-        className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center bg-black p-4 overflow-hidden"
         initial={{ opacity: 1 }}
         animate={isAnimating ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
         exit={{ opacity: 0 }}
