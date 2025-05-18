@@ -1,10 +1,16 @@
 
 import React from "react";
 import ConversationEngine from "@/components/ConversationEngine";
+import { motion } from "framer-motion";
 
 const Index: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-terminal-dark p-4">
+    <motion.div 
+      className="min-h-screen flex items-center justify-center bg-terminal-dark p-4"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
       <div className="w-full max-w-4xl">
         <header className="mb-6">
           <h1 className="text-terminal-accent text-xl font-bold mb-1 tracking-wide">ARCHETYPE DISCOVERY SYSTEM</h1>
@@ -15,7 +21,7 @@ const Index: React.FC = () => {
         </header>
         <ConversationEngine />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
