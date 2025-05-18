@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
         {/* Animated text lines */}
-        <div className="relative w-full max-w-4xl flex-1 flex items-center justify-center">
+        <div className="relative w-full max-w-5xl flex-1 flex items-center justify-center">
           {lines.map((line, index) => (
             <motion.div
               key={`line-${index}`}
@@ -46,10 +46,10 @@ const LandingPage: React.FC = () => {
               transition={{ duration: 0.4 }}
               style={{ 
                 position: 'absolute',
-                maxWidth: "90%",
+                width: "90%",
                 display: (index <= currentLine && index === currentLine - 1) || index === currentLine ? 'block' : 'none'
               }}
-              className="w-full px-4"
+              className="w-full px-8"
             >
               {index === currentLine && (
                 <AnimatedText
@@ -87,7 +87,7 @@ const LandingPage: React.FC = () => {
           {showCTA && (
             <Link 
               to="/quiz" 
-              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 animate-pulse"
+              className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
             >
               <motion.span 
                 className="relative"
