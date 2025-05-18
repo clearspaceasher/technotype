@@ -22,48 +22,49 @@ const ConversationOption: React.FC<ConversationOptionProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   
-  // Figure-8 animation pattern, mirrored for each option
+  // More aggressive figure-8 animation pattern, mirrored for each option
   const figure8Motion = {
     x: isLeftOption 
-      ? [0, 10, 15, 10, 0, -10, -15, -10, 0]
-      : [0, -10, -15, -10, 0, 10, 15, 10, 0],
-    y: [0, -5, 0, 5, 0, -5, 0, 5, 0]
+      ? [0, 15, 25, 15, 0, -15, -25, -15, 0]
+      : [0, -15, -25, -15, 0, 15, 25, 15, 0],
+    y: [0, -10, 0, 10, 0, -10, 0, 10, 0]
   };
 
   return (
     <motion.button
-      className={`px-4 py-2 border border-terminal-accent ${
-        selected ? "bg-terminal-accent/30" : 
-        isHovered ? "bg-terminal-accent/20" : "bg-transparent"
-      } text-left transition-all duration-200 ${
+      className={`text-center transition-all duration-200 ${
+        selected ? "text-terminal-accent text-glow" : 
+        isHovered ? "text-terminal-accent text-glow" : "text-white"
+      } ${
         disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-      } mt-2 w-full`}
+      } mt-4 w-full`}
       onClick={disabled ? undefined : onClick}
       onMouseEnter={() => !disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled}
       animate={isHovered || selected ? figure8Motion : {}}
       transition={{
-        duration: 3,
+        duration: 2.5, // Faster animation for more aggressive sway
         ease: "easeInOut",
         times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
         repeat: Infinity,
         repeatType: "loop"
       }}
     >
-      <div className="flex items-center space-x-2">
-        <span className="text-terminal-accent">&gt;</span>
-        <div className="text-xl md:text-2xl text-terminal-light flex-1">
+      <div className="flex items-center justify-center space-x-2">
+        <div className="text-2xl md:text-3xl flex-1">
           {animateText ? (
             <AnimatedText 
               text={text} 
               speed={15}
-              className="text-terminal-accent font-bold"
+              className={selected || isHovered ? "text-terminal-accent font-bold text-glow" : "text-white font-bold"}
               bold={true}
               noWrap={true}
             />
           ) : (
-            <span className="text-terminal-accent font-bold">{text}</span>
+            <span className={selected || isHovered ? "text-terminal-accent font-bold text-glow" : "text-white font-bold"}>
+              {text}
+            </span>
           )}
         </div>
       </div>
