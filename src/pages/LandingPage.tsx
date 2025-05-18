@@ -13,7 +13,8 @@ const LandingPage: React.FC = () => {
     { text: "— it's a reflection", rotation: 0, bold: true },
     { text: "This short experience helps you map your mind through the lens of screentime.", rotation: 0, bold: false },
     { text: "It's not just screentime.", rotation: 0, bold: false },
-    { text: "It's self-time.", rotation: 0, bold: true }
+    { text: "It's self-time.", rotation: 0, bold: true },
+    { text: "explore your mind", rotation: 0, bold: false, isCTA: true }
   ];
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const LandingPage: React.FC = () => {
                 <AnimatedText
                   text={line.text}
                   speed={30}
-                  className="text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center whitespace-nowrap"
+                  className={`text-terminal-light font-mono text-xl md:text-2xl tracking-tight text-center ${line.isCTA ? 'text-terminal-accent' : ''}`}
                   onComplete={handleLineComplete}
                   bold={line.bold}
                 />
@@ -69,22 +70,14 @@ const LandingPage: React.FC = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ 
-            opacity: showCTA ? 1 : 0, 
-            scale: showCTA ? 1 : 0.9,
-            y: showCTA ? 0 : 20
-          }}
-          transition={{ 
-            duration: 0.5,
-            type: "spring",
-            stiffness: 100
-          }}
-          className="mt-16 mb-8"
-        >
-          {showCTA && (
+        {/* CTA Button - Only show after all lines are typed */}
+        {showCTA && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-16 mb-8"
+          >
             <Link 
               to="/quiz" 
               className="group flex items-center justify-center gap-3 text-xl md:text-2xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
@@ -103,8 +96,8 @@ const LandingPage: React.FC = () => {
                 explore your mind
               </motion.span>
             </Link>
-          )}
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
