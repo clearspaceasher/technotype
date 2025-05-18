@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 
 const Index: React.FC = () => {
   useEffect(() => {
-    // Set background to black when component mounts
+    // Set background to black when component mounts and ensure body has full height
     document.body.style.backgroundColor = "black";
+    document.body.style.minHeight = "100vh";
     
     // Cleanup function to reset background color when component unmounts
     return () => {
       document.body.style.backgroundColor = "";
+      document.body.style.minHeight = "";
     };
   }, []);
   

@@ -5,6 +5,8 @@ import ConversationOption from "./ConversationOption";
 import AnimatedText from "./AnimatedText";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
+import PixelIcon from "./PixelIcon";
+import ArchetypeReveal from "./ArchetypeReveal";
 
 // Digital wellbeing quiz questions - all "this-or-that" type only
 const quizQuestions = [
@@ -74,6 +76,14 @@ const quizQuestions = [
   }
 ];
 
+// Archetypes based on quiz responses
+const archetypes = [
+  { id: "optimizer", name: "The Optimizer", color: "#4ADE80" },
+  { id: "skeptic", name: "The Skeptic", color: "#F43F5E" },
+  { id: "seeker", name: "The Seeker", color: "#9b87f5" },
+  { id: "unplugger", name: "The Unplugger", color: "#0FA0CE" }
+];
+
 const ConversationEngine: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -81,6 +91,9 @@ const ConversationEngine: React.FC = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [optionsVisible, setOptionsVisible] = useState(false);
+  const [iconClicked, setIconClicked] = useState(0);
+  const [showReveal, setShowReveal] = useState(false);
+  const [userArchetype, setUserArchetype] = useState<string>("optimizer");
 
   useEffect(() => {
     if (currentQuestion < quizQuestions.length) {
@@ -108,9 +121,79 @@ const ConversationEngine: React.FC = () => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
+        // Calculate user archetype based on answers
+        const archetype = calculateArchetype(answers);
+        setUserArchetype(archetype);
         setIsFinished(true);
       }
     }, 300); // Reduced delay for smoother experience
+  };
+
+  // Simple algorithm to determine archetype based on answers
+  const calculateArchetype = (answers: Record<string, string>) => {
+    let scores = {
+      optimizer: 0,
+      skeptic: 0,
+      seeker: 0,
+      unplugger: 0
+    };
+    
+    // Score based on specific answer patterns
+    if (answers["tech-morning"] === "digital") scores.optimizer += 1;
+    if (answers["tech-morning"] === "analog") scores.unplugger += 1;
+    
+    if (answers["flow-state"] === "disrupted") scores.skeptic += 1;
+    if (answers["flow-state"] === "connected") scores.optimizer += 1;
+    
+    if (answers["digital-presence"] === "curated") scores.optimizer += 1;
+    if (answers["digital-presence"] === "authentic") scores.seeker += 1;
+    
+    if (answers["tech-breaks"] === "nature") scores.unplugger += 1;
+    if (answers["tech-breaks"] === "social") scores.seeker += 1;
+    
+    if (answers["tech-balance"] === "tool") scores.skeptic += 1;
+    if (answers["tech-balance"] === "extension") scores.optimizer += 1;
+    
+    if (answers["unplug-feelings"] === "free") scores.unplugger += 1;
+    if (answers["unplug-feelings"] === "anxious") scores.optimizer += 1;
+    
+    if (answers["content-preference"] === "mindful") scores.seeker += 1;
+    if (answers["content-preference"] === "escape") scores.optimizer += 1;
+    
+    if (answers["digital-future"] === "promising") scores.optimizer += 1;
+    if (answers["digital-future"] === "concerning") scores.skeptic += 1;
+    
+    // Find highest score
+    let maxScore = 0;
+    let maxArchetype = "optimizer";
+    
+    Object.entries(scores).forEach(([archetype, score]) => {
+      if (score > maxScore) {
+        maxScore = score;
+        maxArchetype = archetype;
+      }
+    });
+    
+    return maxArchetype;
+  };
+
+  const handleIconClick = () => {
+    // Track number of clicks
+    setIconClicked(iconClicked + 1);
+    
+    // If double click, show archetype reveal
+    if (iconClicked === 1) {
+      setShowReveal(true);
+      // Reset click counter
+      setIconClicked(0);
+    }
+    
+    // Reset counter after a delay if not double clicked
+    setTimeout(() => {
+      if (iconClicked > 0) {
+        setIconClicked(0);
+      }
+    }, 500);
   };
 
   const renderQuestion = () => {
@@ -166,35 +249,34 @@ const ConversationEngine: React.FC = () => {
         animate={{ opacity: 1 }}
         className="text-center"
       >
-        <h2 className="text-terminal-light text-3xl mb-6">
+        <h2 className="text-terminal-accent text-3xl md:text-4xl mb-12 text-glow">
           <AnimatedText
-            text="Digital Self Exploration Complete"
-            speed={20}
-            className="text-terminal-accent"
+            text="DIGITAL EXPLORATION COMPLETE"
+            speed={30}
+            className="text-terminal-accent font-bold"
+            bold={true}
           />
         </h2>
-        <p className="text-terminal-light text-lg mb-8">
-          <AnimatedText
-            text="Thank you for exploring your relationship with technology."
-            speed={20}
-            delay={800}
-            className="text-terminal-light"
+        
+        {/* Retro Desktop Icon */}
+        {!showReveal && (
+          <motion.div 
+            className="flex justify-center items-center py-12"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
+            <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
+          </motion.div>
+        )}
+        
+        {/* Archetype Reveal Animation */}
+        {showReveal && (
+          <ArchetypeReveal 
+            archetype={userArchetype}
+            archetypeData={archetypes.find(a => a.id === userArchetype) || archetypes[0]}
           />
-        </p>
-        <p className="text-terminal-light text-lg mb-12">
-          <AnimatedText
-            text="Your digital wellbeing profile is being synthesized..."
-            speed={20}
-            delay={1600}
-            className="text-terminal-light"
-          />
-        </p>
-        <Button
-          onClick={() => window.location.href = '/'}
-          className="bg-terminal-accent text-black hover:bg-terminal-accent/80"
-        >
-          Return Home
-        </Button>
+        )}
       </motion.div>
     );
   };
