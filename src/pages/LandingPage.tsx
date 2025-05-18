@@ -8,6 +8,7 @@ const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
   const [textProgress, setTextProgress] = useState<number>(0);
+  const [lastLineEndPosition, setLastLineEndPosition] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const lines = [
@@ -28,6 +29,17 @@ const LandingPage: React.FC = () => {
   // This function updates the typing progress (0-100%)
   const handleTextProgress = (progress: number) => {
     setTextProgress(progress);
+
+    // Save the ending position of the current line when it completes typing
+    if (progress >= 99 && currentLine < lines.length - 1) {
+      setLastLineEndPosition(calculateEndPosition(currentLine));
+    }
+  };
+
+  // Calculate the final position of the current line
+  const calculateEndPosition = (lineIndex: number) => {
+    const line = lines[lineIndex];
+    return line.text.length;
   };
 
   const handleLineComplete = () => {
@@ -58,6 +70,12 @@ const LandingPage: React.FC = () => {
     return { y: 100, opacity: 0 }; // Default enter from bottom
   };
 
+  // Calculate the starting position for each new line
+  const getStartingPosition = (index: number) => {
+    if (index === 0) return 0;
+    return lastLineEndPosition;
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-terminal-dark p-4 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-center">
@@ -81,7 +99,12 @@ const LandingPage: React.FC = () => {
                 maxWidth: "90vw",
                 display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none',
                 // Make the transform apply dynamically based on text progress
-                transform: `translateX(${currentLine === index ? `-${textProgress}%` : '0%'})`,
+                // Offset by the start position of the current line to create continuity
+                transform: `translateX(${
+                  currentLine === index 
+                    ? `-${(textProgress * (index === 0 ? 1 : 2))}%` 
+                    : getStartingPosition(index) + 'px'
+                })`,
               }}
               className="flex justify-center items-center"
             >
