@@ -7,8 +7,6 @@ import { motion } from "framer-motion";
 const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
-  const [textProgress, setTextProgress] = useState<number>(0);
-  const [lastLineEndPosition, setLastLineEndPosition] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const lines = [
@@ -26,54 +24,24 @@ const LandingPage: React.FC = () => {
     }
   }, [currentLine]);
 
-  // This function updates the typing progress (0-100%)
-  const handleTextProgress = (progress: number) => {
-    setTextProgress(progress);
-
-    // Save the ending position of the current line when it completes typing
-    if (progress >= 99 && currentLine < lines.length - 1) {
-      setLastLineEndPosition(calculateEndPosition(currentLine));
-    }
-  };
-
-  // Calculate the final position of the current line
-  const calculateEndPosition = (lineIndex: number) => {
-    const line = lines[lineIndex];
-    return line.text.length;
-  };
-
   const handleLineComplete = () => {
-    setTextProgress(0);
     setTimeout(() => {
       setCurrentLine(prev => prev + 1);
     }, 800); // Delay between lines
-  };
-
-  // Function to determine exit animation for current line
-  const getExitAnimation = (currentIdx: number, nextIdx: number) => {
-    if (currentIdx >= lines.length - 1) return { y: -100, opacity: 0 };
-    
-    // Get the rotation of the next line to determine exit direction
-    const nextRotation = nextIdx < lines.length ? lines[nextIdx].rotation : 0;
-    
-    if (nextRotation === 90) return { y: -100, opacity: 0 }; // Exit upward
-    if (nextRotation === -90) return { y: 100, opacity: 0 }; // Exit downward
-    
-    // Default exit upward
-    return { y: -100, opacity: 0 };
   };
 
   // Function to determine entry animation based on rotation
   const getEntryAnimation = (rotation: number) => {
     if (rotation === 90) return { y: 100, opacity: 0 }; // Enter from bottom
     if (rotation === -90) return { y: -100, opacity: 0 }; // Enter from top
-    return { y: 100, opacity: 0 }; // Default enter from bottom
+    return { y: 50, opacity: 0 }; // Default enter from bottom (slightly)
   };
 
-  // Calculate the starting position for each new line
-  const getStartingPosition = (index: number) => {
-    if (index === 0) return 0;
-    return lastLineEndPosition;
+  // Function to determine exit animation - opposite of entry
+  const getExitAnimation = (rotation: number) => {
+    if (rotation === 90) return { y: -100, opacity: 0 }; // Exit to top
+    if (rotation === -90) return { y: 100, opacity: 0 }; // Exit to bottom
+    return { y: -50, opacity: 0 }; // Default exit to top (slightly)
   };
 
   return (
@@ -88,21 +56,16 @@ const LandingPage: React.FC = () => {
               animate={{ 
                 opacity: currentLine === index ? 1 : 0,
                 y: currentLine === index ? 0 : 
-                  (currentLine > index ? getExitAnimation(index, index + 1).y : getEntryAnimation(line.rotation).y),
+                  (currentLine > index ? getExitAnimation(line.rotation).y : getEntryAnimation(line.rotation).y),
+                rotate: line.rotation,
               }}
-              exit={getExitAnimation(index, index + 1)}
+              exit={getExitAnimation(line.rotation)}
               transition={{ duration: 0.7, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute',
-                transformOrigin: line.rotation === 90 ? 'bottom center' : line.rotation === -90 ? 'top center' : 'center',
+                transformOrigin: 'center',
                 maxWidth: "90vw",
                 display: (index === currentLine || index === currentLine - 1) ? 'block' : 'none',
-                // Apply rotation immediately (not animated)
-                transform: `rotate(${line.rotation}deg) translateX(${
-                  currentLine === index 
-                    ? `-${(textProgress)}%` 
-                    : getStartingPosition(index) + 'px'
-                })`,
               }}
               className="flex justify-center items-center"
             >
@@ -112,7 +75,6 @@ const LandingPage: React.FC = () => {
                   speed={30}
                   className="text-terminal-light font-mono text-[20vh] leading-tight text-center whitespace-nowrap"
                   onComplete={handleLineComplete}
-                  onProgress={handleTextProgress}
                 />
               )}
               {index === currentLine - 1 && (

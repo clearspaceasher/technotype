@@ -15,7 +15,6 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   speed = 25,
   className = "",
   onComplete,
-  onProgress,
   delay = 0,
 }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -45,14 +44,6 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex]);
         setCurrentIndex(prev => prev + 1);
-        
-        // Calculate and report progress (0-100%)
-        if (onProgress) {
-          // Calculate and send progress - this will be used to follow the text
-          // Use a progressive value that increases as we type each character
-          const progress = (currentIndex + 1) / text.length * 50;  // Use 50% as max to keep text on screen
-          onProgress(progress);
-        }
       }, speed);
       
       return () => clearTimeout(timeout);
@@ -61,7 +52,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       setIsTyping(false);
       if (onComplete) onComplete();
     }
-  }, [text, speed, currentIndex, isTyping, onComplete, delay, onProgress]);
+  }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
   return (
     <div className={className}>
