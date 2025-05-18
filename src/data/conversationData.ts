@@ -1,10 +1,10 @@
 
 export type CharacterClass = 
-  | 'Tactician'
-  | 'Berserker'
-  | 'Shadow'
-  | 'Technomancer'
-  | 'Diplomat';
+  | 'Observer'
+  | 'Catalyst'
+  | 'Weaver'
+  | 'Architect'
+  | 'Mediator';
 
 export interface ConversationNode {
   id: string;
@@ -23,186 +23,186 @@ export type ConversationGraph = Record<string, ConversationNode>;
 export const conversationData: ConversationGraph = {
   intro: {
     id: "intro",
-    text: "SYSTEM ONLINE. INITIATING PERSONALITY ASSESSMENT PROTOCOL...\n\nSubject status: UNKNOWN\nClearance: LEVEL 3\nMission objective: PROFILE DETERMINATION",
+    text: "SYSTEM INITIALIZING...\n\nWelcome to the archetype discovery process.\n\nLet's explore how your mind works.",
     options: [
       {
-        text: "Continue",
+        text: "Begin",
         nextNodeId: "welcome",
       },
     ],
   },
   welcome: {
     id: "welcome",
-    text: "Welcome, operative. I am AXIS, your assignment AI. Before deployment, I need to determine your optimal role in the field. Answer honestly.",
+    text: "I am ECHO, a pattern-recognition system. Through our conversation, I'll help identify your cognitive archetype—the unique way you process the world. There are no right answers here, only honest ones.",
     options: [
       {
-        text: "I'm ready. Let's begin.",
+        text: "I'm ready to explore.",
         nextNodeId: "question1",
       },
       {
-        text: "Why do I need classification?",
+        text: "Why identify archetypes?",
         nextNodeId: "why_classify",
       },
     ],
   },
   why_classify: {
     id: "why_classify",
-    text: "Classification optimizes mission success. Each operative has natural inclinations and strengths. I analyze your decision patterns to identify your optimal tactical profile.",
+    text: "Understanding your cognitive patterns offers insight into how you naturally approach situations. We all have different ways of thinking, each with its own strengths. This exploration helps reveal those patterns.",
     options: [
       {
-        text: "Understood. I'm ready now.",
+        text: "That makes sense. Let's continue.",
         nextNodeId: "question1",
       }
     ],
   },
   question1: {
     id: "question1",
-    text: "Scenario 1: Your team is ambushed during extraction. Two escape routes exist. How do you proceed?",
+    text: "Scenario 1: You find yourself in an unexpected situation with two possible paths forward. How do you typically proceed?",
     options: [
       {
-        text: "Analyze terrain and enemy patterns to determine optimal path.",
+        text: "I observe patterns and variables before making a calculated decision.",
         nextNodeId: "question2",
         classWeight: {
-          Tactician: 2,
-          Technomancer: 1,
+          Observer: 2,
+          Architect: 1,
         },
       },
       {
-        text: "Charge through the weakest point in their line, creating chaos.",
+        text: "I trust my instincts and act decisively in the moment.",
         nextNodeId: "question2",
         classWeight: {
-          Berserker: 2,
-          Tactician: -1,
+          Catalyst: 2,
+          Observer: -1,
         },
       },
       {
-        text: "Slip away unnoticed through the shadows while creating a diversion.",
+        text: "I find the hidden third option that others might miss.",
         nextNodeId: "question2",
         classWeight: {
-          Shadow: 2,
-          Diplomat: -1,
+          Weaver: 2,
+          Mediator: -1,
         },
       },
       {
-        text: "Deploy tech countermeasures to blind enemies and secure escape.",
+        text: "I analyze the systems at play and optimize my approach.",
         nextNodeId: "question2",
         classWeight: {
-          Technomancer: 2,
+          Architect: 2,
         },
       },
       {
-        text: "Negotiate with the ambush leader for safe passage.",
+        text: "I consider how my choice affects everyone involved.",
         nextNodeId: "question2",
         classWeight: {
-          Diplomat: 2,
-          Berserker: -1,
+          Mediator: 2,
+          Catalyst: -1,
         },
       },
     ],
   },
   question2: {
     id: "question2",
-    text: "Scenario 2: A high-value asset is being held in a fortified compound. Your approach?",
+    text: "Scenario 2: You encounter a complex problem that others have struggled to solve. What's your approach?",
     options: [
       {
-        text: "Develop a precise entry and extraction plan with contingencies.",
+        text: "I gather all available information and look for overlooked patterns.",
         nextNodeId: "question3",
         classWeight: {
-          Tactician: 2,
+          Observer: 2,
         },
       },
       {
-        text: "Launch a direct assault when they least expect it.",
+        text: "I try something unconventional that disrupts the usual way of thinking.",
         nextNodeId: "question3",
         classWeight: {
-          Berserker: 2,
-          Shadow: -1,
+          Catalyst: 2,
+          Weaver: -1,
         },
       },
       {
-        text: "Infiltrate silently, leaving no trace of your presence.",
+        text: "I connect seemingly unrelated concepts to create a new perspective.",
         nextNodeId: "question3",
         classWeight: {
-          Shadow: 2,
+          Weaver: 2,
         },
       },
       {
-        text: "Hack their systems to create access points and blindspots.",
+        text: "I break down the problem into components and rebuild a solution methodically.",
         nextNodeId: "question3",
         classWeight: {
-          Technomancer: 2,
-          Berserker: -1,
+          Architect: 2,
+          Catalyst: -1,
         },
       },
       {
-        text: "Pose as a negotiator to gain access through the front door.",
+        text: "I bring people together to find consensus and collaborate on a solution.",
         nextNodeId: "question3",
         classWeight: {
-          Diplomat: 2,
-          Shadow: -1,
+          Mediator: 2,
+          Observer: -1,
         },
       },
     ],
   },
   question3: {
     id: "question3",
-    text: "Scenario 3: You discover a double agent in your ranks. Your response?",
+    text: "Scenario 3: You discover something important that contradicts what others believe. How do you respond?",
     options: [
       {
-        text: "Carefully collect evidence and orchestrate a controlled exposure.",
+        text: "I document my findings meticulously before sharing my conclusions.",
         nextNodeId: "final",
         classWeight: {
-          Tactician: 2,
+          Observer: 2,
         },
       },
       {
-        text: "Confront them directly and decisively.",
+        text: "I present my discovery immediately to spark necessary change.",
         nextNodeId: "final",
         classWeight: {
-          Berserker: 2,
-          Shadow: -1,
+          Catalyst: 2,
+          Weaver: -1,
         },
       },
       {
-        text: "Monitor them secretly to uncover their entire network.",
+        text: "I explore how this new information connects to other domains of knowledge.",
         nextNodeId: "final",
         classWeight: {
-          Shadow: 2,
+          Weaver: 2,
         },
       },
       {
-        text: "Plant false intelligence and track the information flow.",
+        text: "I develop a framework that integrates both the old and new understanding.",
         nextNodeId: "final",
         classWeight: {
-          Technomancer: 2,
+          Architect: 2,
         },
       },
       {
-        text: "Turn them into a triple agent working for your side.",
+        text: "I find ways to introduce the idea gently to minimize resistance.",
         nextNodeId: "final",
         classWeight: {
-          Diplomat: 2,
-          Berserker: -1,
+          Mediator: 2,
+          Catalyst: -1,
         },
       },
     ],
   },
   final: {
     id: "final",
-    text: "Analysis complete. Processing profile...",
+    text: "Thank you for your responses. Analyzing your cognitive patterns...",
     options: [
       {
-        text: "View results",
+        text: "Continue",
         nextNodeId: "results",
       },
     ],
   },
   results: {
     id: "results",
-    text: "Based on your responses, your operative classification has been determined.",
+    text: "Analysis complete. Your responses reveal a distinct pattern of thinking—an archetype that shapes how you perceive and interact with the world.",
     options: [
       {
-        text: "Reveal my class",
+        text: "Reveal my archetype",
         nextNodeId: "class_reveal",
       },
     ],
@@ -212,7 +212,7 @@ export const conversationData: ConversationGraph = {
     text: "", // This will be dynamically set based on the calculated class
     options: [
       {
-        text: "Tell me more about my abilities",
+        text: "Tell me more about these tendencies",
         nextNodeId: "abilities",
       },
       {
@@ -234,24 +234,24 @@ export const conversationData: ConversationGraph = {
 };
 
 export const classDescriptions: Record<CharacterClass, { description: string, abilities: string }> = {
-  Tactician: {
-    description: "CLASS: TACTICIAN\n\nPrimary Function: Strategic Command\n\nYou perceive the battlefield as a complex system of variables. Your mind naturally calculates probabilities, identifies patterns, and develops multi-layered plans. You anticipate enemy movements before they occur and position your team for optimal advantage.",
-    abilities: "ABILITIES:\n\n1. Battlefield Analysis - Rapidly identify tactical advantages in any environment\n2. Strategic Deployment - Optimize team positioning for maximum effectiveness\n3. Contingency Planning - Develop backup strategies that anticipate mission variables\n4. Command Presence - Enhance team coordination and execution efficiency"
+  Observer: {
+    description: "ARCHETYPE: THE OBSERVER\n\nPrimary Tendency: Pattern Recognition\n\nYou naturally step back to watch and analyze. Where others see random events, you perceive the underlying patterns. Your mind excels at collecting data points and forming connections that reveal deeper truths about systems and behaviors.",
+    abilities: "COGNITIVE TENDENCIES:\n\n1. Information Synthesis - You excel at gathering diverse information and distilling it to its essence\n2. Pattern Recognition - You naturally identify recurring themes and connections others miss\n3. Predictive Analysis - Your observations often allow you to anticipate outcomes with unusual accuracy\n4. Objective Assessment - You maintain emotional distance when evaluating situations"
   },
-  Berserker: {
-    description: "CLASS: BERSERKER\n\nPrimary Function: Frontline Assault\n\nYou are a force of nature, channeling controlled aggression into devastating combat effectiveness. When others retreat, you advance. Your presence on the battlefield generates fear in enemies and confidence in allies. Few can match your raw combat potential.",
-    abilities: "ABILITIES:\n\n1. Overwhelming Force - Channel aggression into devastating close-quarters combat\n2. Intimidation Tactics - Demoralize enemies through aggressive action\n3. Adrenaline Control - Maintain peak combat performance under extreme pressure\n4. Shock Assault - Break enemy formations and create tactical opportunities"
+  Catalyst: {
+    description: "ARCHETYPE: THE CATALYST\n\nPrimary Tendency: Transformation\n\nYou are drawn to action and change. Your mind naturally identifies when and how to apply pressure to transform situations. You're comfortable with disruption when it serves a purpose, and you often provide the spark that initiates necessary change.",
+    abilities: "COGNITIVE TENDENCIES:\n\n1. Decisive Action - You quickly move from thought to implementation when conviction strikes\n2. Momentum Building - You excel at creating energy that carries initiatives forward\n3. Comfort with Uncertainty - You navigate changing conditions with unusual ease\n4. Intuitive Timing - You sense the right moment to act for maximum impact"
   },
-  Shadow: {
-    description: "CLASS: SHADOW\n\nPrimary Function: Covert Operations\n\nYou exist in the spaces between perception. Stealth is not just your skill—it's your state of being. You can infiltrate secured locations, gather intelligence, and eliminate targets without leaving a trace. Your greatest victories are the ones no one will ever know about.",
-    abilities: "ABILITIES:\n\n1. Ghost Protocol - Move undetected through monitored environments\n2. Infiltration Expertise - Bypass security systems without triggering alerts\n3. Silent Elimination - Remove threats without revealing your presence\n4. Information Extraction - Gather intelligence from secured sources"
+  Weaver: {
+    description: "ARCHETYPE: THE WEAVER\n\nPrimary Tendency: Connection\n\nYour mind naturally bridges disparate concepts. You see relationships between seemingly unrelated ideas and domains. This allows you to create novel solutions by importing frameworks from one context to solve problems in another. Your thinking transcends traditional boundaries.",
+    abilities: "COGNITIVE TENDENCIES:\n\n1. Conceptual Integration - You blend ideas from different domains into coherent new frameworks\n2. Metaphorical Thinking - You use analogies to illuminate complex concepts and find hidden parallels\n3. Boundary Transcendence - You move fluidly between different disciplines and perspectives\n4. Emergent Insight - You recognize when combined elements create something greater than their parts"
   },
-  Technomancer: {
-    description: "CLASS: TECHNOMANCER\n\nPrimary Function: Technical Warfare\n\nYou speak the language of machines fluently. Complex systems reveal their secrets to you, and you can bend networks to your will. On the modern battlefield, where everything is connected, you control the invisible infrastructure that determines victory.",
-    abilities: "ABILITIES:\n\n1. System Intrusion - Hack into secured networks with unprecedented speed\n2. Electronic Warfare - Disrupt enemy communications and technological systems\n3. Drone Mastery - Deploy and control automated systems for reconnaissance and combat\n4. Adaptive Programming - Create custom solutions for unforeseen technical challenges"
+  Architect: {
+    description: "ARCHETYPE: THE ARCHITECT\n\nPrimary Tendency: System Design\n\nYour mind naturally constructs and optimizes systems. You excel at understanding how components interact and creating structures that efficiently achieve objectives. You build mental models that help you navigate complexity with unusual clarity.",
+    abilities: "COGNITIVE TENDENCIES:\n\n1. System Optimization - You instinctively identify ways to improve efficiency and effectiveness\n2. Structural Analysis - You quickly grasp how components interact within complex systems\n3. Process Creation - You develop frameworks that translate vision into executable steps\n4. Logical Progression - You build arguments and systems that follow clear, coherent principles"
   },
-  Diplomat: {
-    description: "CLASS: DIPLOMAT\n\nPrimary Function: Human Intelligence\n\nYou understand people at a fundamental level. You can read subtle behavioral cues, build rapport with diverse personalities, and navigate complex social dynamics. In a world of sensors and surveillance, human connection remains the most powerful intelligence tool.",
-    abilities: "ABILITIES:\n\n1. Behavioral Analysis - Instantly read intentions and emotional states\n2. Persuasive Communication - Influence targets through precise psychological tactics\n3. Identity Crafting - Assume convincing covers and personas as needed\n4. Network Development - Build and maintain valuable human intelligence sources"
+  Mediator: {
+    description: "ARCHETYPE: THE MEDIATOR\n\nPrimary Tendency: Harmonization\n\nYou naturally sense the human dimension in all situations. Your mind seeks balance and understanding between different perspectives. You excel at finding common ground and creating environments where diverse ideas can coexist and synthesize.",
+    abilities: "COGNITIVE TENDENCIES:\n\n1. Perspective Integration - You naturally reconcile seemingly contradictory viewpoints\n2. Emotional Navigation - You read subtle social cues and underlying feelings\n3. Value Alignment - You find shared principles that unite people with different positions\n4. Communication Translation - You reframe ideas to resonate with different audiences"
   }
 };

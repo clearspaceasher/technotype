@@ -7,10 +7,10 @@ const Index: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-terminal-dark p-4">
       <div className="w-full max-w-4xl">
         <header className="mb-6">
-          <h1 className="text-terminal-accent text-xl font-bold mb-1 tracking-wide">OPERATIVE CLASSIFICATION PROTOCOL</h1>
+          <h1 className="text-terminal-accent text-xl font-bold mb-1 tracking-wide">ARCHETYPE DISCOVERY SYSTEM</h1>
           <div className="h-1 w-full bg-terminal-accent/30 mb-6"></div>
           <p className="text-terminal-muted text-sm">
-            TOP SECRET // SCI // NOFORN // ORCON // REL TO COALITION-DARK
+            A journey into mind patterns and cognitive tendencies
           </p>
         </header>
         <ConversationEngine />

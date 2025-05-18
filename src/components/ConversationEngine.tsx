@@ -16,13 +16,13 @@ const ConversationEngine: React.FC = () => {
   const [currentNode, setCurrentNode] = useState<ConversationNode>(conversationData.intro);
   const [showOptions, setShowOptions] = useState<boolean>(false);
   const [conversationHistory, setConversationHistory] = useState<JSX.Element[]>([]);
-  const [userClass, setUserClass] = useState<CharacterClass | null>(null);
-  const [classScores, setClassScores] = useState<Record<CharacterClass, number>>({
-    Tactician: 0,
-    Berserker: 0,
-    Shadow: 0,
-    Technomancer: 0,
-    Diplomat: 0,
+  const [userArchetype, setUserArchetype] = useState<CharacterClass | null>(null);
+  const [archetypeScores, setArchetypeScores] = useState<Record<CharacterClass, number>>({
+    Observer: 0,
+    Catalyst: 0,
+    Weaver: 0,
+    Architect: 0,
+    Mediator: 0,
   });
   
   useEffect(() => {
@@ -45,9 +45,9 @@ const ConversationEngine: React.FC = () => {
     audio.volume = 0.3;
     audio.play().catch(e => console.log("Audio playback prevented:", e));
     
-    // Update class scores based on the selected option
+    // Update archetype scores based on the selected option
     if (classWeights) {
-      setClassScores(prevScores => {
+      setArchetypeScores(prevScores => {
         const newScores = { ...prevScores };
         
         // Apply weights to each class score
@@ -65,7 +65,7 @@ const ConversationEngine: React.FC = () => {
       ...prev,
       <div key={`node-${currentNodeId}`} className="mb-6">
         <div className="mb-2 text-terminal-light">
-          <span className="text-terminal-accent">&gt; AXIS: </span>
+          <span className="text-terminal-accent">&gt; ECHO: </span>
           {currentNode.text}
         </div>
       </div>
@@ -73,26 +73,26 @@ const ConversationEngine: React.FC = () => {
     
     // Special case for result nodes
     if (nextNodeId === "class_reveal") {
-      // Determine the user's class based on the highest score
-      const sortedClasses = Object.entries(classScores)
+      // Determine the user's archetype based on the highest score
+      const sortedArchetypes = Object.entries(archetypeScores)
         .sort(([, a], [, b]) => b - a)
         .map(([className]) => className as CharacterClass);
       
-      const determinedClass = sortedClasses[0];
-      setUserClass(determinedClass);
+      const determinedArchetype = sortedArchetypes[0];
+      setUserArchetype(determinedArchetype);
       
-      // Create a custom node with the class reveal text
+      // Create a custom node with the archetype reveal text
       const customNode = {
         ...conversationData.class_reveal,
-        text: classDescriptions[determinedClass].description
+        text: classDescriptions[determinedArchetype].description
       };
       
       setCurrentNode(customNode);
-    } else if (nextNodeId === "abilities" && userClass) {
-      // Create a custom node with the abilities text for the determined class
+    } else if (nextNodeId === "abilities" && userArchetype) {
+      // Create a custom node with the abilities text for the determined archetype
       const customNode = {
         ...conversationData.abilities,
-        text: classDescriptions[userClass].abilities
+        text: classDescriptions[userArchetype].abilities
       };
       
       setCurrentNode(customNode);
