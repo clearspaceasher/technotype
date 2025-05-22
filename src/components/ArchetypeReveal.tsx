@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -10,9 +9,16 @@ interface ArchetypeRevealProps {
     name: string;
     color: string;
   };
+  description: string;
+  isLoading: boolean;
 }
 
-const ArchetypeReveal: React.FC<ArchetypeRevealProps> = ({ archetype, archetypeData }) => {
+const ArchetypeReveal: React.FC<ArchetypeRevealProps> = ({ 
+  archetype, 
+  archetypeData, 
+  description,
+  isLoading 
+}) => {
   const [revealComplete, setRevealComplete] = useState(false);
 
   useEffect(() => {
@@ -63,12 +69,18 @@ const ArchetypeReveal: React.FC<ArchetypeRevealProps> = ({ archetype, archetypeD
               {archetypeData.name}
             </h3>
             
-            <div className="text-terminal-accent text-sm md:text-base mt-6">
-              <AnimatedText 
-                text="Your digital identity has been revealed" 
-                speed={30}
-                delay={400}
-              />
+            <div className="text-terminal-accent text-sm md:text-base mt-6 max-w-md">
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-pulse">Generating your digital identity...</div>
+                </div>
+              ) : (
+                <AnimatedText 
+                  text={description}
+                  speed={30}
+                  delay={400}
+                />
+              )}
             </div>
           </motion.div>
         </motion.div>
