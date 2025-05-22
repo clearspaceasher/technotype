@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import PixelIcon from "./PixelIcon";
 import ArchetypeReveal from "./ArchetypeReveal";
+import { generateArchetypeAndDescription } from "@/services/openai";
 
 // Digital wellbeing quiz questions - all "this-or-that" type only
 const quizQuestions = [
@@ -93,6 +94,8 @@ const ConversationEngine: React.FC = () => {
   const [iconClicked, setIconClicked] = useState(0);
   const [showReveal, setShowReveal] = useState(false);
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
+  const [archetypeDescription, setArchetypeDescription] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     if (currentQuestion < quizQuestions.length) {
@@ -110,70 +113,43 @@ const ConversationEngine: React.FC = () => {
     }
   }, [currentQuestion]);
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = async (option: string) => {
     const questionId = quizQuestions[currentQuestion].id;
     setAnswers({ ...answers, [questionId]: option });
     setSelectedOption(option);
 
     // Move to next question with minimal delay
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
-        // Calculate user archetype based on answers
-        const archetype = calculateArchetype(answers);
-        setUserArchetype(archetype);
-        setIsFinished(true);
-      }
-    }, 300); // Reduced delay for smoother experience
-  };
+        setIsGenerating(true);
+        try {
+          // Convert answers to the format expected by the OpenAI service
+          const quizAnswers = Object.entries(answers).map(([id, answer]) => ({
+            id,
+            answer: answer as string
+          }));
 
-  // Simple algorithm to determine archetype based on answers
-  const calculateArchetype = (answers: Record<string, string>) => {
-    let scores = {
-      optimizer: 0,
-      skeptic: 0,
-      seeker: 0,
-      unplugger: 0
-    };
-    
-    // Score based on specific answer patterns
-    if (answers["tech-morning"] === "digital") scores.optimizer += 1;
-    if (answers["tech-morning"] === "analog") scores.unplugger += 1;
-    
-    if (answers["flow-state"] === "disrupted") scores.skeptic += 1;
-    if (answers["flow-state"] === "connected") scores.optimizer += 1;
-    
-    if (answers["digital-presence"] === "curated") scores.optimizer += 1;
-    if (answers["digital-presence"] === "authentic") scores.seeker += 1;
-    
-    if (answers["tech-breaks"] === "nature") scores.unplugger += 1;
-    if (answers["tech-breaks"] === "social") scores.seeker += 1;
-    
-    if (answers["tech-balance"] === "tool") scores.skeptic += 1;
-    if (answers["tech-balance"] === "extension") scores.optimizer += 1;
-    
-    if (answers["unplug-feelings"] === "free") scores.unplugger += 1;
-    if (answers["unplug-feelings"] === "anxious") scores.optimizer += 1;
-    
-    if (answers["content-preference"] === "mindful") scores.seeker += 1;
-    if (answers["content-preference"] === "escape") scores.optimizer += 1;
-    
-    if (answers["digital-future"] === "promising") scores.optimizer += 1;
-    if (answers["digital-future"] === "concerning") scores.skeptic += 1;
-    
-    // Find highest score
-    let maxScore = 0;
-    let maxArchetype = "optimizer";
-    
-    Object.entries(scores).forEach(([archetype, score]) => {
-      if (score > maxScore) {
-        maxScore = score;
-        maxArchetype = archetype;
+          // Generate archetype and description
+          const { archetype, description } = await generateArchetypeAndDescription(quizAnswers);
+          
+          // Find the matching archetype data
+          const matchingArchetype = archetypes.find(a => a.name.toLowerCase() === archetype.toLowerCase()) || archetypes[0];
+          
+          setUserArchetype(matchingArchetype.id);
+          setArchetypeDescription(description);
+        } catch (error) {
+          console.error('Error generating archetype:', error);
+          // Fallback to default archetype
+          setUserArchetype("optimizer");
+          setArchetypeDescription("Your digital identity has been revealed.");
+        } finally {
+          setIsGenerating(false);
+          setIsFinished(true);
+        }
       }
-    });
-    
-    return maxArchetype;
+    }, 300);
   };
 
   const handleIconClick = () => {
@@ -275,6 +251,8 @@ const ConversationEngine: React.FC = () => {
           <ArchetypeReveal 
             archetype={userArchetype}
             archetypeData={archetypes.find(a => a.id === userArchetype) || archetypes[0]}
+            description={archetypeDescription}
+            isLoading={isGenerating}
           />
         )}
       </motion.div>
