@@ -86,7 +86,7 @@ const archetypes = [
 ];
 
 const ConversationEngine: React.FC = () => {
-  const [phase, setPhase] = useState<'path-selection' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
+  const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [conversationalAnswers, setConversationalAnswers] = useState<string[]>([]);
@@ -100,9 +100,17 @@ const ConversationEngine: React.FC = () => {
 
   const handlePathSelection = (path: 1 | 2) => {
     if (path === 1) {
-      setPhase('guided-quiz');
+      setPhase('guided-transition');
+      // Transition to guided quiz after animation
+      setTimeout(() => {
+        setPhase('guided-quiz');
+      }, 3000);
     } else {
-      setPhase('open-conversation');
+      setPhase('open-transition');
+      // Transition to open conversation after animation
+      setTimeout(() => {
+        setPhase('open-conversation');
+      }, 2500);
     }
   };
 
@@ -301,9 +309,159 @@ const ConversationEngine: React.FC = () => {
     );
   };
 
+  // Guided Protocol Transition Animation
+  const renderGuidedTransition = () => {
+    return (
+      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-8"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-terminal-accent text-4xl mb-8"
+            >
+              INITIALIZING GUIDED PROTOCOL
+            </motion.div>
+            
+            <motion.div className="space-y-4">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+                className="h-1 bg-terminal-accent mx-auto max-w-md"
+              />
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ duration: 2, delay: 1, repeat: Infinity }}
+                className="text-terminal-light"
+              >
+                <AnimatedText
+                  text="scanning digital behavior patterns..."
+                  speed={30}
+                  className="text-terminal-light"
+                />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+                className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-8"
+              >
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0.3 }}
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: i * 0.1,
+                      repeat: Infinity,
+                      repeatType: "reverse"
+                    }}
+                    className="w-4 h-4 border border-terminal-accent"
+                  />
+                ))}
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  };
+
+  // Open Sequence Transition Animation
+  const renderOpenTransition = () => {
+    return (
+      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-8"
+          >
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="text-terminal-accent text-4xl mb-8"
+            >
+              ENTERING OPEN SEQUENCE
+            </motion.div>
+            
+            <motion.div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-terminal-light text-left max-w-2xl mx-auto"
+              >
+                <AnimatedText
+                  text="> no predetermined paths detected"
+                  speed={25}
+                  className="text-terminal-light mb-2"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <AnimatedText
+                    text="> adaptive conversation module: ACTIVE"
+                    speed={25}
+                    className="text-terminal-accent mb-2"
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2 }}
+                >
+                  <AnimatedText
+                    text="> preparing dynamic interface..."
+                    speed={25}
+                    className="text-terminal-light/70"
+                  />
+                </motion.div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.8, duration: 0.5 }}
+                className="flex justify-center"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="w-8 h-8 border-2 border-terminal-accent border-t-transparent rounded-full"
+                />
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  };
+
   // Render based on current phase
   if (phase === 'path-selection') {
     return <PathSelector onPathSelected={handlePathSelection} />;
+  }
+
+  if (phase === 'guided-transition') {
+    return renderGuidedTransition();
+  }
+
+  if (phase === 'open-transition') {
+    return renderOpenTransition();
   }
 
   if (phase === 'open-conversation') {
