@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -133,7 +132,15 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                   animate={{ opacity: 1 }}
                   className="inline"
                 >
-                  <span className="text-terminal-light">{currentInput}</span>
+                  <motion.span 
+                    className="text-terminal-light"
+                    animate={{ 
+                      scale: currentInput.length > 0 ? 1 + (currentInput.length * 0.02) : 1 
+                    }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                  >
+                    {currentInput}
+                  </motion.span>
                   <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
                 </motion.span>
               )}
