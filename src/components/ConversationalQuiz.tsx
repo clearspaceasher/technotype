@@ -13,6 +13,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [currentInput, setCurrentInput] = useState("");
   const [questionComplete, setQuestionComplete] = useState(false);
   const [showingResponse, setShowingResponse] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -29,7 +30,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   ];
 
   const currentQuestionText = currentQuestion < questions.length 
-    ? `> ${questions[currentQuestion]}` 
+    ? `${'>'}  ${questions[currentQuestion]}` 
     : "";
 
   useEffect(() => {
@@ -40,6 +41,14 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
         if (currentInput.trim()) {
           const newAnswers = [...answers, currentInput.trim()];
           setAnswers(newAnswers);
+          
+          // Add to conversation history
+          setConversationHistory(prev => [
+            ...prev,
+            { type: 'question', text: questions[currentQuestion] },
+            { type: 'answer', text: currentInput.trim() }
+          ]);
+          
           setShowingResponse(true);
           
           // Show response briefly, then move to next question
@@ -53,11 +62,11 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
               // Quiz complete
               onComplete(newAnswers);
             }
-          }, 1500);
+          }, 1000);
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => prev.slice(0, -1));
-      } else if (e.key.length === 1) {
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
       }
     };
@@ -68,31 +77,35 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
   return (
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
-      <div className="max-w-2xl mx-auto">
-        {/* Terminal header */}
-        <div className="flex items-center mb-6">
-          <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-        </div>
-        
-        {/* Progress indicator */}
-        <div className="mb-8">
-          <div className="text-terminal-accent text-sm mb-2">
-            question {currentQuestion + 1} of {questions.length}
+      <div className="max-w-4xl mx-auto">
+        {/* Terminal with outline */}
+        <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
+          {/* Terminal header */}
+          <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
+            <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+            <span className="ml-4 text-terminal-accent/70 text-sm">open_sequence.exe</span>
           </div>
-          <div className="w-full bg-gray-800 h-1 rounded">
-            <div 
-              className="bg-terminal-accent h-1 rounded transition-all duration-300"
-              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-            />
+          
+          {/* Conversation history */}
+          <div className="space-y-2 mb-4">
+            {conversationHistory.map((entry, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`text-left ${entry.type === 'question' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
+              >
+                {entry.type === 'question' ? `> ${entry.text}` : `  ${entry.text}`}
+              </motion.div>
+            ))}
           </div>
-        </div>
-        
-        {/* Question and input area */}
-        <div className="space-y-4">
+          
+          {/* Current question */}
           {currentQuestion < questions.length && (
-            <>
+            <div className="space-y-4">
               <AnimatedText
                 text={currentQuestionText}
                 speed={25}
@@ -104,9 +117,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center mt-4"
+                  className="flex items-center text-left"
                 >
-                  <span className="text-terminal-light mr-2">></span>
+                  <span className="text-terminal-light mr-2">{'>'}</span>
                   <span className="text-terminal-light">{currentInput}</span>
                   <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
                 </motion.div>
@@ -116,30 +129,18 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-terminal-accent mt-4"
+                  className="text-terminal-accent/60 text-left"
                 >
                   <AnimatedText
-                    text="response recorded. processing..."
+                    text="  processing response..."
                     speed={20}
-                    className="text-terminal-accent"
+                    className="text-terminal-accent/60 text-left"
                   />
                 </motion.div>
               )}
-            </>
+            </div>
           )}
         </div>
-        
-        {/* Show previous answers */}
-        {answers.length > 0 && (
-          <div className="mt-8 pt-4 border-t border-terminal-accent/30">
-            <div className="text-terminal-accent/60 text-sm mb-2">previous responses:</div>
-            {answers.slice(-3).map((answer, idx) => (
-              <div key={idx} className="text-terminal-light/60 text-sm mb-1">
-                {idx + answers.length - 2}: {answer.substring(0, 50)}...
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
