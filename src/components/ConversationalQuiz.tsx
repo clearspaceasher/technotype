@@ -1,15 +1,13 @@
 
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
 
 interface ConversationalQuizProps {
-  onComplete: (answers: string[], userInfo: {name: string, gender: string, age: string}) => void;
+  onComplete: (answers: string[]) => void;
 }
 
 const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) => {
-  const [phase, setPhase] = useState<'userInfo' | 'questions'>('userInfo');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
@@ -17,18 +15,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
   const [isBumping, setIsBumping] = useState(false);
-  
-  // User info collection
-  const [userInfo, setUserInfo] = useState({name: '', gender: '', age: ''});
-  const [currentUserInfoField, setCurrentUserInfoField] = useState(0);
-  
-  const userInfoQuestions = [
-    "what's your name?",
-    "what's your gender?",
-    "what's your age?"
-  ];
-  
-  const userInfoFields = ['name', 'gender', 'age'] as const;
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -44,17 +30,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     "if technology disappeared tomorrow, how would you feel?"
   ];
 
-  const getCurrentQuestionText = () => {
-    if (phase === 'userInfo') {
-      return currentUserInfoField < userInfoQuestions.length 
-        ? `${'>'}  ${userInfoQuestions[currentUserInfoField]}` 
-        : "";
-    } else {
-      return currentQuestion < questions.length 
-        ? `${'>'}  ${questions[currentQuestion]}` 
-        : "";
-    }
-  };
+  const currentQuestionText = currentQuestion < questions.length 
+    ? `${'>'}  ${questions[currentQuestion]}` 
+    : "";
 
   // Calculate scale based on input length - small increments of 0.005 per character
   const currentScale = 1 + (currentInput.length * 0.005);
@@ -72,64 +50,31 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           setIsBumping(true);
           setTimeout(() => setIsBumping(false), 200);
           
-          if (phase === 'userInfo') {
-            // Handle user info collection
-            const field = userInfoFields[currentUserInfoField];
-            const newUserInfo = { ...userInfo, [field]: currentInput.trim() };
-            setUserInfo(newUserInfo);
-            
-            // Add to conversation history
-            setConversationHistory(prev => [
-              ...prev,
-              { type: 'question', text: userInfoQuestions[currentUserInfoField] },
-              { type: 'answer', text: currentInput.trim() }
-            ]);
-            
-            // Reset input immediately to snap scale back to 1
-            setCurrentInput("");
-            setShowingResponse(true);
-            
-            // Move to next user info field or start questions
-            setTimeout(() => {
-              if (currentUserInfoField < userInfoQuestions.length - 1) {
-                setCurrentUserInfoField(currentUserInfoField + 1);
-                setQuestionComplete(false);
-                setShowingResponse(false);
-              } else {
-                // Start quiz questions
-                setPhase('questions');
-                setQuestionComplete(false);
-                setShowingResponse(false);
-              }
-            }, 1000);
-          } else {
-            // Handle quiz questions
-            const newAnswers = [...answers, currentInput.trim()];
-            setAnswers(newAnswers);
-            
-            // Add to conversation history
-            setConversationHistory(prev => [
-              ...prev,
-              { type: 'question', text: questions[currentQuestion] },
-              { type: 'answer', text: currentInput.trim() }
-            ]);
-            
-            // Reset input immediately to snap scale back to 1
-            setCurrentInput("");
-            setShowingResponse(true);
-            
-            // Show response briefly, then move to next question
-            setTimeout(() => {
-              if (currentQuestion < questions.length - 1) {
-                setCurrentQuestion(currentQuestion + 1);
-                setQuestionComplete(false);
-                setShowingResponse(false);
-              } else {
-                // Quiz complete
-                onComplete(newAnswers, userInfo);
-              }
-            }, 1000);
-          }
+          const newAnswers = [...answers, currentInput.trim()];
+          setAnswers(newAnswers);
+          
+          // Add to conversation history
+          setConversationHistory(prev => [
+            ...prev,
+            { type: 'question', text: questions[currentQuestion] },
+            { type: 'answer', text: currentInput.trim() }
+          ]);
+          
+          // Reset input immediately to snap scale back to 1
+          setCurrentInput("");
+          setShowingResponse(true);
+          
+          // Show response briefly, then move to next question
+          setTimeout(() => {
+            if (currentQuestion < questions.length - 1) {
+              setCurrentQuestion(currentQuestion + 1);
+              setQuestionComplete(false);
+              setShowingResponse(false);
+            } else {
+              // Quiz complete
+              onComplete(newAnswers);
+            }
+          }, 1000);
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => {
@@ -143,7 +88,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, currentUserInfoField, phase, userInfo, onComplete, questions.length, userInfoQuestions.length]);
+  }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length]);
 
   return (
     <motion.div 
@@ -199,7 +144,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 className="text-terminal-accent/60 text-left"
               />
             </motion.div>
-          ) : (
+          ) : currentQuestion < questions.length && (
             <motion.div 
               className="space-y-4"
               animate={{ 
@@ -211,7 +156,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
               }}
             >
               <AnimatedText
-                text={getCurrentQuestionText()}
+                text={currentQuestionText}
                 speed={25}
                 className="text-terminal-light text-left break-words"
                 onComplete={() => setQuestionComplete(true)}
@@ -239,4 +184,3 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 };
 
 export default ConversationalQuiz;
-
