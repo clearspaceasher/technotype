@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -35,6 +36,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
   // Calculate scale based on input length - small increments of 0.005 per character
   const currentScale = 1 + (currentInput.length * 0.005);
+  
+  // Calculate inverse zoom for the page - as text gets bigger, page zooms out
+  const pageZoom = 1 / currentScale;
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -87,7 +91,16 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length]);
 
   return (
-    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
+    <motion.div 
+      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
+      animate={{ 
+        scale: pageZoom
+      }}
+      transition={{ 
+        duration: 0.1, 
+        ease: "easeOut" 
+      }}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <motion.div 
@@ -166,7 +179,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           )}
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
