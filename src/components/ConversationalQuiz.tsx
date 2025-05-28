@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -72,8 +71,11 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           }, 1000);
         }
       } else if (e.key === "Backspace") {
-        setCurrentInput(prev => prev.slice(0, -1));
-        setIsTyping(prev => prev.slice(0, -1).length > 0);
+        setCurrentInput(prev => {
+          const newInput = prev.slice(0, -1);
+          setIsTyping(newInput.length > 0);
+          return newInput;
+        });
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
         setIsTyping(true);
