@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -14,38 +13,39 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { generateNextQuestion, generateTechnotypeFromConversation, ConversationMessage } from "@/lib/openai";
 
 interface ConversationalQuizProps {
-  onComplete: (answers: string[]) => void;
+  onComplete: (technotype: string, description: string) => void;
 }
 
 const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState("");
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionComplete, setQuestionComplete] = useState(false);
   const [showingResponse, setShowingResponse] = useState(false);
-  const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
   const [isBumping, setIsBumping] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Placeholder questions - will be replaced with AI integration later
-  const questions = [
-    "describe your relationship with notifications...",
-    "when was the last time you felt truly disconnected?",
-    "what does digital freedom mean to you?",
-    "how do you define authentic online presence?",
-    "what technology scares you the most?",
-    "describe your ideal digital day...",
-    "what would you do with unlimited screen time?",
-    "how do you handle digital overwhelm?",
-    "what's your relationship with social media?",
-    "if technology disappeared tomorrow, how would you feel?"
-  ];
+  // Initialize with first question
+  useEffect(() => {
+    const initializeQuiz = async () => {
+      try {
+        const firstQuestion = await generateNextQuestion([], 0);
+        setCurrentQuestion(firstQuestion);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to initialize quiz:', error);
+        setIsLoading(false);
+      }
+    };
+    initializeQuiz();
+  }, []);
 
-  const currentQuestionText = currentQuestion < questions.length 
-    ? `${'>'}  ${questions[currentQuestion]}` 
-    : "";
+  const currentQuestionText = currentQuestion ? `${'>'}  ${currentQuestion}` : "";
 
   // Calculate scale based on input length - small increments of 0.005 per character
   const currentScale = 1 + (currentInput.length * 0.005);
@@ -57,9 +57,45 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     navigate('/');
   };
 
+  const handleAnswer = async (answer: string) => {
+    try {
+      // Add to conversation history
+      const newHistory: ConversationMessage[] = [
+        ...conversationHistory,
+        { role: 'assistant', content: currentQuestion },
+        { role: 'user', content: answer }
+      ];
+      setConversationHistory(newHistory);
+
+      // Generate next question
+      const nextQuestion = await generateNextQuestion(newHistory, newHistory.length / 2);
+      
+      // Parse the comment and question (first line is comment, second line is question)
+      const [comment, question] = nextQuestion.split('\n').map(line => line.trim());
+
+      // Only add comment to conversation history if we're past the first question
+      if (comment && newHistory.length > 2) { // More than 2 messages means we're past the first Q&A
+        setConversationHistory(prev => [
+          ...prev,
+          { role: 'assistant', content: comment }
+        ]);
+      }
+
+      setCurrentQuestion(question);
+
+      // If we've reached 10 questions, generate the technotype
+      if (newHistory.length >= 20) { // 10 questions * 2 (question + answer)
+        const result = await generateTechnotypeFromConversation(newHistory);
+        onComplete(result.technotype, result.description);
+      }
+    } catch (error) {
+      console.error('Failed to process answer:', error);
+    }
+  };
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!questionComplete || showingResponse) return;
+      if (!questionComplete || showingResponse || isLoading) return;
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
@@ -70,28 +106,15 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           const newAnswers = [...answers, currentInput.trim()];
           setAnswers(newAnswers);
           
-          // Add to conversation history
-          setConversationHistory(prev => [
-            ...prev,
-            { type: 'question', text: questions[currentQuestion] },
-            { type: 'answer', text: currentInput.trim() }
-          ]);
-          
           // Reset input immediately to snap scale back to 1
           setCurrentInput("");
           setShowingResponse(true);
           
-          // Show response briefly, then move to next question
-          setTimeout(() => {
-            if (currentQuestion < questions.length - 1) {
-              setCurrentQuestion(currentQuestion + 1);
-              setQuestionComplete(false);
-              setShowingResponse(false);
-            } else {
-              // Quiz complete
-              onComplete(newAnswers);
-            }
-          }, 1000);
+          // Process the answer and move to next question
+          handleAnswer(currentInput.trim()).then(() => {
+            setQuestionComplete(false);
+            setShowingResponse(false);
+          });
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => {
@@ -105,7 +128,19 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length]);
+  }, [questionComplete, showingResponse, currentInput, answers, isLoading]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+        <AnimatedText
+          text="initializing conversation..."
+          speed={20}
+          className="text-terminal-accent/60"
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -167,9 +202,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className={`text-left break-words ${entry.type === 'question' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
+                className={`text-left break-words ${entry.role === 'assistant' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
               >
-                {entry.type === 'question' ? `> ${entry.text}` : `  ${entry.text}`}
+                {entry.role === 'assistant' ? `> ${entry.content}` : `  ${entry.content}`}
               </motion.div>
             ))}
           </div>
@@ -187,7 +222,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 className="text-terminal-accent/60 text-left"
               />
             </motion.div>
-          ) : currentQuestion < questions.length && (
+          ) : currentQuestion && (
             <motion.div 
               className="space-y-4"
               animate={{ 

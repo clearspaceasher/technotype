@@ -8,6 +8,7 @@ import PixelIcon from "./PixelIcon";
 import ArchetypeReveal from "./ArchetypeReveal";
 import PathSelector from "./PathSelector";
 import ConversationalQuiz from "./ConversationalQuiz";
+import { generateTechnotypeFromQuiz, QuizAnswer } from "@/lib/openai";
 
 interface UserInfo {
   name: string;
@@ -104,6 +105,7 @@ const ConversationEngine: React.FC = () => {
   const [iconClicked, setIconClicked] = useState(0);
   const [showReveal, setShowReveal] = useState(false);
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
+  const [technotypeDescription, setTechnotypeDescription] = useState<string>("");
   const [isZooming, setIsZooming] = useState(false);
 
   const handlePathSelection = (path: 1 | 2, userInfo: UserInfo) => {
@@ -131,10 +133,9 @@ const ConversationEngine: React.FC = () => {
     }
   };
 
-  const handleConversationalComplete = (answers: string[]) => {
-    setConversationalAnswers(answers);
-    // For now, just set a default archetype
-    setUserArchetype("seeker");
+  const handleConversationalComplete = (technotype: string, description: string) => {
+    setUserArchetype(technotype);
+    setTechnotypeDescription(description);
     setPhase('results');
     setIsFinished(true);
   };
@@ -155,22 +156,39 @@ const ConversationEngine: React.FC = () => {
     }
   }, [currentQuestion]);
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = async (option: string) => {
     const questionId = quizQuestions[currentQuestion].id;
     setAnswers({ ...answers, [questionId]: option });
     setSelectedOption(option);
 
     // Move to next question with minimal delay
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
-        // Calculate user archetype based on answers
-        const archetype = calculateArchetype(answers);
-        setUserArchetype(archetype);
-        setIsFinished(true);
+        // Convert answers to QuizAnswer format
+        const quizAnswers: QuizAnswer[] = quizQuestions.map(q => ({
+          question: q.question,
+          answer: q.options.find(o => o.id === answers[q.id])?.text || ''
+        }));
+
+        // Generate technotype using OpenAI
+        try {
+          const result = await generateTechnotypeFromQuiz(quizAnswers);
+          setUserArchetype(result.technotype);
+          setTechnotypeDescription(result.description);
+          setIsFinished(true);
+          setPhase('results');
+        } catch (error) {
+          console.error('Failed to generate technotype:', error);
+          // Fallback to default archetype if generation fails
+          const archetype = calculateArchetype(answers);
+          setUserArchetype(archetype);
+          setIsFinished(true);
+          setPhase('results');
+        }
       }
-    }, 300); // Reduced delay for smoother experience
+    }, 300);
   };
 
   // Simple algorithm to determine archetype based on answers
@@ -289,40 +307,51 @@ const ConversationEngine: React.FC = () => {
 
   const renderResults = () => {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center"
-      >
-        <h2 className="text-terminal-accent text-3xl md:text-4xl mb-12 text-glow">
-          <AnimatedText
-            text="DIGITAL EXPLORATION COMPLETE"
-            speed={30}
-            className="text-terminal-accent font-bold"
-            bold={true}
-          />
-        </h2>
-        
-        {/* Retro Desktop Icon */}
-        {!showReveal && (
-          <motion.div 
-            className="flex justify-center items-center py-12"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
+      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
           >
-            <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
+            <h1 className="text-4xl font-bold mb-8 text-terminal-accent">
+              Your Technotype Revealed
+            </h1>
+            
+            {/* Retro Desktop Icon */}
+            {!showReveal && (
+              <motion.div 
+                className="flex justify-center items-center py-12"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
+                <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
+              </motion.div>
+            )}
+            
+            {/* Archetype Reveal Animation */}
+            {showReveal && (
+              <div className="bg-black/80 border border-terminal-accent/50 rounded-lg p-8 mb-8">
+                <h2 className="text-3xl font-bold mb-4 text-terminal-light">
+                  {userArchetype}
+                </h2>
+                <p className="text-lg text-terminal-light/80 whitespace-pre-line">
+                  {technotypeDescription}
+                </p>
+              </div>
+            )}
+            
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-terminal-accent text-black hover:bg-terminal-accent/80"
+            >
+              Start Over
+            </Button>
           </motion.div>
-        )}
-        
-        {/* Archetype Reveal Animation */}
-        {showReveal && (
-          <ArchetypeReveal 
-            archetype={userArchetype}
-            archetypeData={archetypes.find(a => a.id === userArchetype) || archetypes[0]}
-          />
-        )}
-      </motion.div>
+        </div>
+      </div>
     );
   };
 
@@ -502,11 +531,7 @@ const ConversationEngine: React.FC = () => {
   }
 
   if (phase === 'results') {
-    return (
-      <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light flex flex-col">
-        {renderResults()}
-      </div>
-    );
+    return renderResults();
   }
 
   // Original guided quiz flow (phase === 'guided-quiz')
