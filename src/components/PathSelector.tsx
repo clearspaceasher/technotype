@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -21,6 +20,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   const [showError, setShowError] = useState(false);
   const [promptComplete, setPromptComplete] = useState(false);
   const [selectedPath, setSelectedPath] = useState<"1" | "2" | null>(null);
+  const [bump, setBump] = useState(false);
 
   const promptText = `> welcome, ${userInfo?.name || 'user'}.
 
@@ -44,6 +44,9 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
       if (phase !== 'path-selection' || !promptComplete) return;
       
       if (e.key === "Enter" && selectedPath) {
+        // Trigger bump animation
+        setBump(true);
+        setTimeout(() => setBump(false), 200);
         // Confirm selection with Enter
         setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
       } else if (e.key === "1" || e.key === "2") {
@@ -74,7 +77,11 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
+    <motion.div
+      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
+      animate={bump ? { scale: [1, 1.02, 1] } : {}}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
@@ -138,7 +145,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

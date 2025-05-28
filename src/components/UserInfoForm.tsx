@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -23,6 +22,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [currentInput, setCurrentInput] = useState("");
   const [promptComplete, setPromptComplete] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [bump, setBump] = useState(false);
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
@@ -49,6 +49,10 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
               return;
             }
           }
+
+          // Trigger bump animation
+          setBump(true);
+          setTimeout(() => setBump(false), 200);
 
           const newUserInfo = { ...userInfo, [currentField]: currentInput.trim() };
           setUserInfo(newUserInfo);
@@ -79,7 +83,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   }, [promptComplete, currentInput, currentField, userInfo, onComplete]);
 
   return (
-    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
+    <motion.div
+      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
+      animate={bump ? { scale: [1, 1.02, 1] } : {}}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
@@ -146,7 +154,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
