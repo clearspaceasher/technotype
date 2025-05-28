@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -14,7 +15,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
   const [isBumping, setIsBumping] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -34,6 +34,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     ? `${'>'}  ${questions[currentQuestion]}` 
     : "";
 
+  // Calculate scale based on input length - small increments of 0.005 per character
+  const currentScale = 1 + (currentInput.length * 0.005);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!questionComplete || showingResponse) return;
@@ -42,7 +45,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
         if (currentInput.trim()) {
           // Trigger bump animation and snap back scale
           setIsBumping(true);
-          setIsTyping(false);
           setTimeout(() => setIsBumping(false), 200);
           
           const newAnswers = [...answers, currentInput.trim()];
@@ -73,12 +75,10 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => {
           const newInput = prev.slice(0, -1);
-          setIsTyping(newInput.length > 0);
           return newInput;
         });
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
-        setIsTyping(true);
       }
     };
 
@@ -123,10 +123,10 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
             <motion.div 
               className="space-y-4"
               animate={{ 
-                scale: isTyping ? 1.02 : 1 
+                scale: currentScale
               }}
               transition={{ 
-                duration: 0.15, 
+                duration: 0.1, 
                 ease: "easeOut" 
               }}
             >
