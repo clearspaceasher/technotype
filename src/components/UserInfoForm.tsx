@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface UserInfo {
   name: string;
@@ -99,11 +110,33 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
         >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
-            <div 
-              className="w-3 h-3 rounded-full bg-red-500 mr-2 cursor-pointer hover:bg-red-400 transition-colors"
-              onClick={handleExit}
-              title="exit/restart"
-            ></div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div 
+                  className="w-3 h-3 rounded-full bg-red-500 mr-2 cursor-pointer hover:bg-red-400 transition-colors"
+                  title="exit/restart"
+                />
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-black border border-terminal-accent/50 text-terminal-light">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-terminal-light">Exit User Registration?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-terminal-light/70">
+                    Are you sure you want to exit? Your progress will be lost.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-transparent border border-terminal-accent/50 text-terminal-light hover:bg-terminal-accent/10">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleExit}
+                    className="bg-red-500 text-white hover:bg-red-600"
+                  >
+                    Exit
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
             <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
             <span className="ml-4 text-terminal-accent/70 text-sm">user_registration.exe</span>
