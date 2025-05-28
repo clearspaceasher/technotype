@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Terminal from "./Terminal";
 import ConversationOption from "./ConversationOption";
@@ -98,20 +97,29 @@ const ConversationEngine: React.FC = () => {
   const [iconClicked, setIconClicked] = useState(0);
   const [showReveal, setShowReveal] = useState(false);
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
+  const [isZooming, setIsZooming] = useState(false);
 
   const handlePathSelection = (path: 1 | 2) => {
     if (path === 1) {
       setPhase('guided-transition');
-      // Transition to guided quiz after longer animation
+      // Start zoom animation before transitioning to guided quiz
       setTimeout(() => {
-        setPhase('guided-quiz');
-      }, 6000); // Increased from 3000ms to 6000ms
+        setIsZooming(true);
+        setTimeout(() => {
+          setPhase('guided-quiz');
+          setIsZooming(false);
+        }, 1000);
+      }, 5000); // Increased from 3000ms to 5000ms for longer animation
     } else {
       setPhase('open-transition');
-      // Transition to open conversation after longer animation
+      // Start zoom animation before transitioning to open conversation
       setTimeout(() => {
-        setPhase('open-conversation');
-      }, 5500); // Increased from 2500ms to 5500ms
+        setIsZooming(true);
+        setTimeout(() => {
+          setPhase('open-conversation');
+          setIsZooming(false);
+        }, 1000);
+      }, 4500); // Increased from 2500ms to 4500ms for longer animation
     }
   };
 
@@ -313,7 +321,15 @@ const ConversationEngine: React.FC = () => {
   // Guided Protocol Transition Animation
   const renderGuidedTransition = () => {
     return (
-      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+      <motion.div 
+        className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center"
+        initial={{ opacity: 1, scale: 1 }}
+        animate={isZooming ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
+        transition={{ 
+          duration: isZooming ? 1 : 0.5,
+          ease: "easeInOut" 
+        }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0 }}
@@ -333,19 +349,19 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 3, delay: 0.8 }} // Increased from 1.5s to 3s
+                transition={{ duration: 3, delay: 0.8 }}
                 className="h-1 bg-terminal-accent mx-auto max-w-md"
               />
               
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
-                transition={{ duration: 3, delay: 1.5, repeat: Infinity }} // Increased duration and delay
+                transition={{ duration: 3, delay: 1.5, repeat: Infinity }}
                 className="text-terminal-light"
               >
                 <AnimatedText
                   text="scanning digital behavior patterns..."
-                  speed={40} // Slower typing speed
+                  speed={40}
                   className="text-terminal-light"
                 />
               </motion.div>
@@ -353,7 +369,7 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 3.5 }} // Increased delay
+                transition={{ delay: 3.5 }}
                 className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-8"
               >
                 {Array.from({ length: 9 }).map((_, i) => (
@@ -362,8 +378,8 @@ const ConversationEngine: React.FC = () => {
                     initial={{ opacity: 0.3 }}
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{ 
-                      duration: 1.2, // Increased from 0.8s to 1.2s
-                      delay: i * 0.15, // Increased delay between squares
+                      duration: 1.2,
+                      delay: i * 0.15,
                       repeat: Infinity,
                       repeatType: "reverse"
                     }}
@@ -374,14 +390,22 @@ const ConversationEngine: React.FC = () => {
             </motion.div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
   // Open Sequence Transition Animation
   const renderOpenTransition = () => {
     return (
-      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+      <motion.div 
+        className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center"
+        initial={{ opacity: 1, scale: 1 }}
+        animate={isZooming ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
+        transition={{ 
+          duration: isZooming ? 1 : 0.5,
+          ease: "easeInOut" 
+        }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0 }}
@@ -401,18 +425,18 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }} // Increased delay
+                transition={{ delay: 0.8 }}
                 className="text-terminal-light text-left max-w-2xl mx-auto"
               >
                 <AnimatedText
                   text="> no predetermined paths detected"
-                  speed={35} // Slower typing
+                  speed={35}
                   className="text-terminal-light mb-2"
                 />
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 2.5 }} // Increased delay
+                  transition={{ delay: 2.5 }}
                 >
                   <AnimatedText
                     text="> adaptive conversation module: ACTIVE"
@@ -423,7 +447,7 @@ const ConversationEngine: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 4.2 }} // Increased delay
+                  transition={{ delay: 4.2 }}
                 >
                   <AnimatedText
                     text="> preparing dynamic interface..."
@@ -436,19 +460,19 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 3.8, duration: 0.8 }} // Increased delay and duration
+                transition={{ delay: 3.8, duration: 0.8 }}
                 className="flex justify-center"
               >
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }} // Slower rotation
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                   className="w-8 h-8 border-2 border-terminal-accent border-t-transparent rounded-full"
                 />
               </motion.div>
             </motion.div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
