@@ -23,7 +23,6 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [currentInput, setCurrentInput] = useState("");
   const [promptComplete, setPromptComplete] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [isZooming, setIsZooming] = useState(false);
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
@@ -62,11 +61,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           } else if (currentField === 'age') {
             setCurrentField('gender');
           } else {
-            // All fields complete - start zoom animation
-            setIsZooming(true);
-            setTimeout(() => {
-              onComplete(newUserInfo);
-            }, 1000);
+            // All fields complete
+            setTimeout(() => onComplete(newUserInfo), 500);
           }
         }
       } else if (e.key === "Backspace") {
@@ -83,15 +79,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   }, [promptComplete, currentInput, currentField, userInfo, onComplete]);
 
   return (
-    <motion.div 
-      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
-      initial={{ opacity: 1, scale: 1 }}
-      animate={isZooming ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
-      transition={{ 
-        duration: isZooming ? 1 : 0.5,
-        ease: "easeInOut" 
-      }}
-    >
+    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
@@ -157,7 +145,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -21,7 +21,6 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   const [showError, setShowError] = useState(false);
   const [promptComplete, setPromptComplete] = useState(false);
   const [selectedPath, setSelectedPath] = useState<"1" | "2" | null>(null);
-  const [isZooming, setIsZooming] = useState(false);
 
   const promptText = `> welcome, ${userInfo?.name || 'user'}.
 
@@ -45,11 +44,8 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
       if (phase !== 'path-selection' || !promptComplete) return;
       
       if (e.key === "Enter" && selectedPath) {
-        // Confirm selection with Enter and start zoom animation
-        setIsZooming(true);
-        setTimeout(() => {
-          onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!);
-        }, 1000);
+        // Confirm selection with Enter
+        setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
       } else if (e.key === "1" || e.key === "2") {
         setSelectedPath(e.key as "1" | "2");
         setCurrentInput(e.key);
@@ -78,15 +74,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   }
 
   return (
-    <motion.div 
-      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
-      initial={{ opacity: 1, scale: 1 }}
-      animate={isZooming ? { scale: 20, opacity: 0 } : { scale: 1, opacity: 1 }}
-      transition={{ 
-        duration: isZooming ? 1 : 0.5,
-        ease: "easeInOut" 
-      }}
-    >
+    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
@@ -148,7 +136,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
