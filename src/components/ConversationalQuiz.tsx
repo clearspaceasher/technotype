@@ -57,13 +57,14 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
             { type: 'answer', text: currentInput.trim() }
           ]);
           
+          // Reset input immediately to snap scale back to 1
+          setCurrentInput("");
           setShowingResponse(true);
           
           // Show response briefly, then move to next question
           setTimeout(() => {
             if (currentQuestion < questions.length - 1) {
               setCurrentQuestion(currentQuestion + 1);
-              setCurrentInput("");
               setQuestionComplete(false);
               setShowingResponse(false);
             } else {
