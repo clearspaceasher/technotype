@@ -119,8 +119,20 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
             ))}
           </div>
           
-          {/* Current question */}
-          {currentQuestion < questions.length && (
+          {/* Current question or processing state */}
+          {showingResponse ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-terminal-accent/60 text-left"
+            >
+              <AnimatedText
+                text="  processing response..."
+                speed={20}
+                className="text-terminal-accent/60 text-left"
+              />
+            </motion.div>
+          ) : currentQuestion < questions.length && (
             <motion.div 
               className="space-y-4"
               animate={{ 
@@ -138,7 +150,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 onComplete={() => setQuestionComplete(true)}
               />
               
-              {questionComplete && !showingResponse && (
+              {questionComplete && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -147,20 +159,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                   <span className="text-terminal-light mr-2">{'>'}</span>
                   <span className="text-terminal-light">{currentInput}</span>
                   <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
-                </motion.div>
-              )}
-              
-              {showingResponse && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-terminal-accent/60 text-left"
-                >
-                  <AnimatedText
-                    text="  processing response..."
-                    speed={20}
-                    className="text-terminal-accent/60 text-left"
-                  />
                 </motion.div>
               )}
             </motion.div>
