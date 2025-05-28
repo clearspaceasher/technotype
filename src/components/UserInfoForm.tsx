@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
 
 interface UserInfo {
@@ -24,6 +24,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [promptComplete, setPromptComplete] = useState(false);
   const [showError, setShowError] = useState(false);
   const [bump, setBump] = useState(false);
+  const navigate = useNavigate();
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
@@ -32,6 +33,10 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   };
 
   const currentPrompt = prompts[currentField];
+
+  const handleExit = () => {
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -94,7 +99,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
         >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
-            <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+            <div 
+              className="w-3 h-3 rounded-full bg-red-500 mr-2 cursor-pointer hover:bg-red-400 transition-colors"
+              onClick={handleExit}
+              title="exit/restart"
+            ></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
             <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
             <span className="ml-4 text-terminal-accent/70 text-sm">user_registration.exe</span>
