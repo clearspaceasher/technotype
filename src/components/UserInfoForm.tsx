@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
+import { useSound } from "../hooks/useSound";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [showError, setShowError] = useState(false);
   const [bump, setBump] = useState(false);
   const navigate = useNavigate();
+  const { playSound } = useSound();
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
@@ -67,6 +69,9 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
             }
           }
 
+          // Play chunky Enter sound
+          playSound('enterClick', { volume: 0.4 });
+
           // Trigger bump animation
           setBump(true);
           setTimeout(() => setBump(false), 300);
@@ -87,9 +92,13 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           }
         }
       } else if (e.key === "Backspace") {
+        // Play tactile click for backspace
+        playSound('keyClick', { volume: 0.3 });
         setCurrentInput(prev => prev.slice(0, -1));
         setShowError(false);
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        // Play tactile click for regular keys
+        playSound('keyClick', { volume: 0.3 });
         setCurrentInput(prev => prev + e.key);
         setShowError(false);
       }
@@ -97,7 +106,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [promptComplete, currentInput, currentField, userInfo, onComplete]);
+  }, [promptComplete, currentInput, currentField, userInfo, onComplete, playSound]);
 
   return (
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">

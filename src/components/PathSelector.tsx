@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
 import UserInfoForm from "./UserInfoForm";
+import { useSound } from "../hooks/useSound";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,7 @@ interface PathSelectorProps {
 }
 
 const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
+  const { playSound } = useSound();
   const [phase, setPhase] = useState<'user-info' | 'path-selection'>('user-info');
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [currentInput, setCurrentInput] = useState("");
@@ -61,19 +63,28 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
       if (phase !== 'path-selection' || !promptComplete) return;
       
       if (e.key === "Enter" && selectedPath) {
+        // Play chunky Enter sound
+        playSound('enterClick', { volume: 0.4 });
+        
         // Trigger bump animation
         setBump(true);
         setTimeout(() => setBump(false), 300);
         // Confirm selection with Enter
         setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
       } else if (e.key === "1" || e.key === "2") {
+        // Play tactile click for valid path selection
+        playSound('keyClick', { volume: 0.3 });
         setSelectedPath(e.key as "1" | "2");
         setCurrentInput(e.key);
         setShowError(false);
       } else if (e.key === "Backspace") {
+        // Play tactile click for backspace
+        playSound('keyClick', { volume: 0.3 });
         setSelectedPath(null);
         setCurrentInput("");
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        // Play tactile click for invalid input too (to feel responsive)
+        playSound('keyClick', { volume: 0.3 });
         // Any other single character input
         setCurrentInput(e.key);
         setSelectedPath(null);
@@ -87,7 +98,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [onPathSelected, promptComplete, selectedPath, phase, userInfo]);
+  }, [onPathSelected, promptComplete, selectedPath, phase, userInfo, playSound]);
 
   if (phase === 'user-info') {
     return <UserInfoForm onComplete={handleUserInfoComplete} />;

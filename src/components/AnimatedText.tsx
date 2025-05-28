@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useSound } from "../hooks/useSound";
 
 interface AnimatedTextProps {
   text: string;
@@ -23,13 +24,15 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
+  const { playSound, stopSound } = useSound();
   
   useEffect(() => {
     // Reset state when text prop changes
     setDisplayedText("");
     setCurrentIndex(0);
     setIsTyping(false);
-  }, [text]);
+    stopSound('typing');
+  }, [text, stopSound]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -38,6 +41,8 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     if (!isTyping && currentIndex === 0) {
       timeout = setTimeout(() => {
         setIsTyping(true);
+        // Start typing sound loop
+        playSound('typing', { loop: true, volume: 0.2 });
       }, delay);
       return () => clearTimeout(timeout);
     }
@@ -53,9 +58,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     } else if (isTyping && currentIndex === text.length) {
       // Animation complete
       setIsTyping(false);
+      stopSound('typing');
       if (onComplete) onComplete();
     }
-  }, [text, speed, currentIndex, isTyping, onComplete, delay]);
+  }, [text, speed, currentIndex, isTyping, onComplete, delay, playSound, stopSound]);
 
   const fontClassNames = bold ? "font-bold" : "";
   const wrapClassNames = noWrap ? "whitespace-nowrap" : "break-words whitespace-pre-wrap";
