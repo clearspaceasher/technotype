@@ -90,6 +90,7 @@ const ConversationEngine: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [conversationalAnswers, setConversationalAnswers] = useState<string[]>([]);
+  const [userInfo, setUserInfo] = useState<{name: string, gender: string, age: string}>({name: '', gender: '', age: ''});
   const [isTyping, setIsTyping] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -123,8 +124,9 @@ const ConversationEngine: React.FC = () => {
     }
   };
 
-  const handleConversationalComplete = (answers: string[]) => {
+  const handleConversationalComplete = (answers: string[], userInfo: {name: string, gender: string, age: string}) => {
     setConversationalAnswers(answers);
+    setUserInfo(userInfo);
     // For now, just set a default archetype
     setUserArchetype("seeker");
     setPhase('results');
