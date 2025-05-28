@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -14,6 +13,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [questionComplete, setQuestionComplete] = useState(false);
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
+  const [isBumping, setIsBumping] = useState(false);
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -39,6 +39,10 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
+          // Trigger bump animation
+          setIsBumping(true);
+          setTimeout(() => setIsBumping(false), 200);
+          
           const newAnswers = [...answers, currentInput.trim()];
           setAnswers(newAnswers);
           
@@ -79,7 +83,11 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
-        <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
+        <motion.div 
+          className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80"
+          animate={isBumping ? { scale: [1, 1.02, 1] } : { scale: 1 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
+        >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
             <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
@@ -140,7 +148,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
               )}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
