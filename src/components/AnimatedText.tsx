@@ -61,8 +61,8 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   const wrapClassNames = noWrap ? "whitespace-nowrap" : "break-words whitespace-pre-wrap";
 
   return (
-    <div className={`${className} ${fontClassNames} ${wrapClassNames} w-full`}>
-      <span>{displayedText}</span>
+    <div className={`${className} ${fontClassNames} ${wrapClassNames} w-full overflow-hidden`}>
+      <span className="block">{displayedText}</span>
       {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>
   );
