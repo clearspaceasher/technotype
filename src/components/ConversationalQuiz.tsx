@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -39,9 +40,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
-          // Trigger bump animation
+          // Trigger more pronounced bump animation
           setIsBumping(true);
-          setTimeout(() => setIsBumping(false), 200);
+          setTimeout(() => setIsBumping(false), 300);
           
           const newAnswers = [...answers, currentInput.trim()];
           setAnswers(newAnswers);
@@ -80,13 +81,16 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length]);
 
   return (
-    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
+    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono cursor-retro">
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
         <motion.div 
           className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80"
-          animate={isBumping ? { scale: [1, 1.02, 1] } : { scale: 1 }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
+          animate={isBumping ? { 
+            scale: [1, 1.05, 0.98, 1.02, 1],
+            rotateZ: [0, -0.5, 0.5, -0.3, 0]
+          } : { scale: 1, rotateZ: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
@@ -150,6 +154,13 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           )}
         </motion.div>
       </div>
+      
+      {/* Retro cursor styles */}
+      <style jsx>{`
+        .cursor-retro {
+          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 8h16v2H8zM8 10h2v2H8zM22 10h2v2h-2zM8 12h2v2H8zM22 12h2v2h-2zM8 14h2v2H8zM22 14h2v2h-2zM8 16h2v2H8zM22 16h2v2h-2zM8 18h2v2H8zM22 18h2v2h-2zM8 20h2v2H8zM22 20h2v2h-2zM8 22h16v2H8z' fill='%234ADE80'/%3E%3C/svg%3E") 16 16, auto;
+        }
+      `}</style>
     </div>
   );
 };
