@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
 
 interface ConversationalQuizProps {
@@ -15,6 +15,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
   const [isBumping, setIsBumping] = useState(false);
+  const navigate = useNavigate();
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -39,6 +40,10 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   
   // Calculate inverse zoom for the page - as text gets bigger, page zooms out
   const pageZoom = 1 / currentScale;
+
+  const handleExit = () => {
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -110,7 +115,11 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
         >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
-            <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+            <div 
+              className="w-3 h-3 rounded-full bg-red-500 mr-2 cursor-pointer hover:bg-red-400 transition-colors"
+              onClick={handleExit}
+              title="exit/restart"
+            ></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
             <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
             <span className="ml-4 text-terminal-accent/70 text-sm">open_sequence.exe</span>
