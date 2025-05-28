@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import PixelIcon from "./PixelIcon";
 import ArchetypeReveal from "./ArchetypeReveal";
+import PathSelector from "./PathSelector";
+import ConversationalQuiz from "./ConversationalQuiz";
 
 // Digital wellbeing quiz questions - all "this-or-that" type only
 const quizQuestions = [
@@ -84,8 +86,10 @@ const archetypes = [
 ];
 
 const ConversationEngine: React.FC = () => {
+  const [phase, setPhase] = useState<'path-selection' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [conversationalAnswers, setConversationalAnswers] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -93,6 +97,22 @@ const ConversationEngine: React.FC = () => {
   const [iconClicked, setIconClicked] = useState(0);
   const [showReveal, setShowReveal] = useState(false);
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
+
+  const handlePathSelection = (path: 1 | 2) => {
+    if (path === 1) {
+      setPhase('guided-quiz');
+    } else {
+      setPhase('open-conversation');
+    }
+  };
+
+  const handleConversationalComplete = (answers: string[]) => {
+    setConversationalAnswers(answers);
+    // For now, just set a default archetype
+    setUserArchetype("seeker");
+    setPhase('results');
+    setIsFinished(true);
+  };
 
   useEffect(() => {
     if (currentQuestion < quizQuestions.length) {
@@ -281,6 +301,24 @@ const ConversationEngine: React.FC = () => {
     );
   };
 
+  // Render based on current phase
+  if (phase === 'path-selection') {
+    return <PathSelector onPathSelected={handlePathSelection} />;
+  }
+
+  if (phase === 'open-conversation') {
+    return <ConversationalQuiz onComplete={handleConversationalComplete} />;
+  }
+
+  if (phase === 'results') {
+    return (
+      <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light flex flex-col">
+        {renderResults()}
+      </div>
+    );
+  }
+
+  // Original guided quiz flow (phase === 'guided-quiz')
   return (
     <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light flex flex-col">
       {!isFinished ? (
@@ -298,13 +336,10 @@ const ConversationEngine: React.FC = () => {
             </div>
           </div>
           
-          {/* Remove flex-grow completely to position content at the top */}
-          
           <div className="flex justify-center items-center mt-8">
             {renderQuestion()}
           </div>
           
-          {/* Add more flex-grow at the bottom to push everything up */}
           <div className="flex-grow flex-grow-[3]"></div>
         </>
       ) : (
