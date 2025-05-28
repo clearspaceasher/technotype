@@ -2,18 +2,29 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
+import UserInfoForm from "./UserInfoForm";
+
+interface UserInfo {
+  name: string;
+  age: string;
+  gender: string;
+}
 
 interface PathSelectorProps {
-  onPathSelected: (path: 1 | 2) => void;
+  onPathSelected: (path: 1 | 2, userInfo: UserInfo) => void;
 }
 
 const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
+  const [phase, setPhase] = useState<'user-info' | 'path-selection'>('user-info');
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [currentInput, setCurrentInput] = useState("");
   const [showError, setShowError] = useState(false);
   const [promptComplete, setPromptComplete] = useState(false);
   const [selectedPath, setSelectedPath] = useState<"1" | "2" | null>(null);
 
-  const promptText = `> choose your path:
+  const promptText = `> welcome, ${userInfo?.name || 'user'}.
+
+> choose your path:
 
 [1] guided protocol
     a structured diagnostic of your digital psyche
@@ -23,13 +34,18 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
 
 > `;
 
+  const handleUserInfoComplete = (info: UserInfo) => {
+    setUserInfo(info);
+    setPhase('path-selection');
+  };
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!promptComplete) return;
+      if (phase !== 'path-selection' || !promptComplete) return;
       
       if (e.key === "Enter" && selectedPath) {
         // Confirm selection with Enter
-        setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2), 500);
+        setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
       } else if (e.key === "1" || e.key === "2") {
         setSelectedPath(e.key as "1" | "2");
         setCurrentInput(e.key);
@@ -51,7 +67,11 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [onPathSelected, promptComplete, selectedPath]);
+  }, [onPathSelected, promptComplete, selectedPath, phase, userInfo]);
+
+  if (phase === 'user-info') {
+    return <UserInfoForm onComplete={handleUserInfoComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">

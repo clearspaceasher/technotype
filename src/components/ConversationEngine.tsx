@@ -9,6 +9,12 @@ import ArchetypeReveal from "./ArchetypeReveal";
 import PathSelector from "./PathSelector";
 import ConversationalQuiz from "./ConversationalQuiz";
 
+interface UserInfo {
+  name: string;
+  age: string;
+  gender: string;
+}
+
 // Digital wellbeing quiz questions - all "this-or-that" type only
 const quizQuestions = [
   {
@@ -87,6 +93,7 @@ const archetypes = [
 
 const ConversationEngine: React.FC = () => {
   const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [conversationalAnswers, setConversationalAnswers] = useState<string[]>([]);
@@ -99,7 +106,8 @@ const ConversationEngine: React.FC = () => {
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
   const [isZooming, setIsZooming] = useState(false);
 
-  const handlePathSelection = (path: 1 | 2) => {
+  const handlePathSelection = (path: 1 | 2, userInfo: UserInfo) => {
+    setUserInfo(userInfo);
     if (path === 1) {
       setPhase('guided-transition');
       // Start zoom animation before transitioning to guided quiz
