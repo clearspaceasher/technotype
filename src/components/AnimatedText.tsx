@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from "react";
-import { useSound } from "../hooks/useSound";
 
 interface AnimatedTextProps {
   text: string;
@@ -21,23 +20,16 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   bold = false,
   noWrap = false,
 }) => {
-  console.log("AnimatedText rendering with text:", text);
-  
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const { playSound, stopSound } = useSound();
   
   useEffect(() => {
-    console.log("AnimatedText: text changed, resetting state");
     // Reset state when text prop changes
     setDisplayedText("");
     setCurrentIndex(0);
     setIsTyping(false);
-    if (stopSound) {
-      stopSound('typing');
-    }
-  }, [text, stopSound]);
+  }, [text]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -45,12 +37,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     // Initial delay before starting to type
     if (!isTyping && currentIndex === 0) {
       timeout = setTimeout(() => {
-        console.log("AnimatedText: starting typing animation");
         setIsTyping(true);
-        // Start typing sound loop
-        if (playSound) {
-          playSound('typing', { loop: true, volume: 0.2 });
-        }
       }, delay);
       return () => clearTimeout(timeout);
     }
@@ -65,14 +52,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       return () => clearTimeout(timeout);
     } else if (isTyping && currentIndex === text.length) {
       // Animation complete
-      console.log("AnimatedText: animation complete");
       setIsTyping(false);
-      if (stopSound) {
-        stopSound('typing');
-      }
       if (onComplete) onComplete();
     }
-  }, [text, speed, currentIndex, isTyping, onComplete, delay, playSound, stopSound]);
+  }, [text, speed, currentIndex, isTyping, onComplete, delay]);
 
   const fontClassNames = bold ? "font-bold" : "";
   const wrapClassNames = noWrap ? "whitespace-nowrap" : "break-words whitespace-pre-wrap";
@@ -80,7 +63,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   return (
     <div className={`${className} ${fontClassNames} ${wrapClassNames} w-full`}>
       <span>{displayedText}</span>
-      {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>}
+      {isTyping && <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-cursor-blink"></span>}
     </div>
   );
 };

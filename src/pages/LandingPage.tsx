@@ -5,8 +5,6 @@ import AnimatedText from "@/components/AnimatedText";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LandingPage: React.FC = () => {
-  console.log("LandingPage component rendering");
-  
   const [currentLine, setCurrentLine] = useState<number>(0);
   const [showCTA, setShowCTA] = useState<boolean>(false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
@@ -21,16 +19,13 @@ const LandingPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    console.log("LandingPage: currentLine changed to", currentLine);
     // Handle animation sequence completions
     if (currentLine >= lines.length) {
-      console.log("LandingPage: all lines complete, showing CTA");
       setTimeout(() => setShowCTA(true), 500);
     }
-  }, [currentLine, lines.length]);
+  }, [currentLine]);
 
   const handleLineComplete = () => {
-    console.log("LandingPage: line complete, moving to next");
     setTimeout(() => {
       setCurrentLine(prev => prev + 1);
     }, 800); // Delay between lines
@@ -49,7 +44,6 @@ const LandingPage: React.FC = () => {
 
   const handleCtaClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("LandingPage: CTA clicked, navigating to quiz");
     setIsAnimating(true);
     // Wait for zoom animation to complete before navigating
     setTimeout(() => {

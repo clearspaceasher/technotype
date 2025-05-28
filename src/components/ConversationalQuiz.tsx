@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import AnimatedText from "./AnimatedText";
-import { useSound } from "../hooks/useSound";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +28,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
   const [isBumping, setIsBumping] = useState(false);
   const navigate = useNavigate();
-  const { playSound } = useSound();
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -64,9 +63,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
-          // Play chunky Enter sound
-          playSound('enterClick', { volume: 0.4 });
-          
           // Trigger bump animation and snap back scale
           setIsBumping(true);
           setTimeout(() => setIsBumping(false), 200);
@@ -98,22 +94,18 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           }, 1000);
         }
       } else if (e.key === "Backspace") {
-        // Play tactile click for backspace
-        playSound('keyClick', { volume: 0.3 });
         setCurrentInput(prev => {
           const newInput = prev.slice(0, -1);
           return newInput;
         });
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-        // Play tactile click for regular keys
-        playSound('keyClick', { volume: 0.3 });
         setCurrentInput(prev => prev + e.key);
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length, playSound]);
+  }, [questionComplete, showingResponse, currentInput, answers, currentQuestion, onComplete, questions.length]);
 
   return (
     <motion.div 
