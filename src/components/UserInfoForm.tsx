@@ -110,24 +110,25 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
               </div>
             )}
             
-            {/* Current prompt */}
-            <AnimatedText
-              text={currentPrompt}
-              speed={30}
-              className="text-terminal-light whitespace-pre-line text-left"
-              onComplete={() => setPromptComplete(true)}
-            />
-            
-            {promptComplete && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center text-left"
-              >
-                <span className="text-terminal-light">{currentInput}</span>
-                <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
-              </motion.div>
-            )}
+            {/* Current prompt and input on same line */}
+            <div className="text-left">
+              <AnimatedText
+                text={currentPrompt}
+                speed={30}
+                className="text-terminal-light whitespace-pre-line inline"
+                onComplete={() => setPromptComplete(true)}
+              />
+              {promptComplete && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="inline"
+                >
+                  <span className="text-terminal-light">{currentInput}</span>
+                  <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
+                </motion.span>
+              )}
+            </div>
             
             {showError && (
               <motion.div
