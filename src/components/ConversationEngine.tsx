@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Terminal from "./Terminal";
 import ConversationOption from "./ConversationOption";
@@ -101,16 +102,16 @@ const ConversationEngine: React.FC = () => {
   const handlePathSelection = (path: 1 | 2) => {
     if (path === 1) {
       setPhase('guided-transition');
-      // Transition to guided quiz after animation
+      // Transition to guided quiz after longer animation
       setTimeout(() => {
         setPhase('guided-quiz');
-      }, 3000);
+      }, 6000); // Increased from 3000ms to 6000ms
     } else {
       setPhase('open-transition');
-      // Transition to open conversation after animation
+      // Transition to open conversation after longer animation
       setTimeout(() => {
         setPhase('open-conversation');
-      }, 2500);
+      }, 5500); // Increased from 2500ms to 5500ms
     }
   };
 
@@ -322,7 +323,7 @@ const ConversationEngine: React.FC = () => {
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.8 }}
               className="text-terminal-accent text-4xl mb-8"
             >
               INITIALIZING GUIDED PROTOCOL
@@ -332,19 +333,19 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 1.5, delay: 0.5 }}
+                transition={{ duration: 3, delay: 0.8 }} // Increased from 1.5s to 3s
                 className="h-1 bg-terminal-accent mx-auto max-w-md"
               />
               
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
-                transition={{ duration: 2, delay: 1, repeat: Infinity }}
+                transition={{ duration: 3, delay: 1.5, repeat: Infinity }} // Increased duration and delay
                 className="text-terminal-light"
               >
                 <AnimatedText
                   text="scanning digital behavior patterns..."
-                  speed={30}
+                  speed={40} // Slower typing speed
                   className="text-terminal-light"
                 />
               </motion.div>
@@ -352,7 +353,7 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2 }}
+                transition={{ delay: 3.5 }} // Increased delay
                 className="grid grid-cols-3 gap-4 max-w-md mx-auto mt-8"
               >
                 {Array.from({ length: 9 }).map((_, i) => (
@@ -361,8 +362,8 @@ const ConversationEngine: React.FC = () => {
                     initial={{ opacity: 0.3 }}
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{ 
-                      duration: 0.8, 
-                      delay: i * 0.1,
+                      duration: 1.2, // Increased from 0.8s to 1.2s
+                      delay: i * 0.15, // Increased delay between squares
                       repeat: Infinity,
                       repeatType: "reverse"
                     }}
@@ -390,7 +391,7 @@ const ConversationEngine: React.FC = () => {
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
               className="text-terminal-accent text-4xl mb-8"
             >
               ENTERING OPEN SEQUENCE
@@ -400,33 +401,33 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.8 }} // Increased delay
                 className="text-terminal-light text-left max-w-2xl mx-auto"
               >
                 <AnimatedText
                   text="> no predetermined paths detected"
-                  speed={25}
+                  speed={35} // Slower typing
                   className="text-terminal-light mb-2"
                 />
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.2 }}
+                  transition={{ delay: 2.5 }} // Increased delay
                 >
                   <AnimatedText
                     text="> adaptive conversation module: ACTIVE"
-                    speed={25}
+                    speed={35}
                     className="text-terminal-accent mb-2"
                   />
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 2 }}
+                  transition={{ delay: 4.2 }} // Increased delay
                 >
                   <AnimatedText
                     text="> preparing dynamic interface..."
-                    speed={25}
+                    speed={35}
                     className="text-terminal-light/70"
                   />
                 </motion.div>
@@ -435,12 +436,12 @@ const ConversationEngine: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.8, duration: 0.5 }}
+                transition={{ delay: 3.8, duration: 0.8 }} // Increased delay and duration
                 className="flex justify-center"
               >
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }} // Slower rotation
                   className="w-8 h-8 border-2 border-terminal-accent border-t-transparent rounded-full"
                 />
               </motion.div>
