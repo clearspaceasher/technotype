@@ -86,7 +86,7 @@ const archetypes = [
 ];
 
 const ConversationEngine: React.FC = () => {
-  const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
+  const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-userinfo' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [conversationalAnswers, setConversationalAnswers] = useState<string[]>([]);
@@ -100,14 +100,28 @@ const ConversationEngine: React.FC = () => {
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
   const [isZooming, setIsZooming] = useState(false);
 
+  // User info collection for guided quiz
+  const [currentUserInfoField, setCurrentUserInfoField] = useState(0);
+  const [currentInput, setCurrentInput] = useState("");
+  const [questionComplete, setQuestionComplete] = useState(false);
+  const [showingResponse, setShowingResponse] = useState(false);
+
+  const userInfoQuestions = [
+    "What's your name?",
+    "What's your gender?", 
+    "What's your age?"
+  ];
+
+  const userInfoFields = ['name', 'gender', 'age'] as const;
+
   const handlePathSelection = (path: 1 | 2) => {
     if (path === 1) {
       setPhase('guided-transition');
-      // Start zoom animation before transitioning to guided quiz
+      // Start zoom animation before transitioning to guided user info
       setTimeout(() => {
         setIsZooming(true);
         setTimeout(() => {
-          setPhase('guided-quiz');
+          setPhase('guided-userinfo');
           setIsZooming(false);
         }, 1000);
       }, 5000); // Increased from 3000ms to 5000ms for longer animation
@@ -133,8 +147,46 @@ const ConversationEngine: React.FC = () => {
     setIsFinished(true);
   };
 
+  // Handle guided user info collection
   useEffect(() => {
-    if (currentQuestion < quizQuestions.length) {
+    if (phase !== 'guided-userinfo') return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!questionComplete || showingResponse) return;
+      
+      if (e.key === "Enter") {
+        if (currentInput.trim()) {
+          const field = userInfoFields[currentUserInfoField];
+          const newUserInfo = { ...userInfo, [field]: currentInput.trim() };
+          setUserInfo(newUserInfo);
+          
+          setCurrentInput("");
+          setShowingResponse(true);
+          
+          setTimeout(() => {
+            if (currentUserInfoField < userInfoQuestions.length - 1) {
+              setCurrentUserInfoField(currentUserInfoField + 1);
+              setQuestionComplete(false);
+              setShowingResponse(false);
+            } else {
+              // Move to guided quiz
+              setPhase('guided-quiz');
+            }
+          }, 1000);
+        }
+      } else if (e.key === "Backspace") {
+        setCurrentInput(prev => prev.slice(0, -1));
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        setCurrentInput(prev => prev + e.key);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [phase, questionComplete, showingResponse, currentInput, currentUserInfoField, userInfo]);
+
+  useEffect(() => {
+    if (currentQuestion < quizQuestions.length && phase === 'guided-quiz') {
       setSelectedOption(null);
       setOptionsVisible(false);
       setIsTyping(true);
@@ -147,7 +199,7 @@ const ConversationEngine: React.FC = () => {
       
       return () => clearTimeout(timer);
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, phase]);
 
   const handleOptionSelect = (option: string) => {
     const questionId = quizQuestions[currentQuestion].id;
@@ -163,6 +215,7 @@ const ConversationEngine: React.FC = () => {
         const archetype = calculateArchetype(answers);
         setUserArchetype(archetype);
         setIsFinished(true);
+        setPhase('results');
       }
     }, 300); // Reduced delay for smoother experience
   };
@@ -232,6 +285,63 @@ const ConversationEngine: React.FC = () => {
         setIconClicked(0);
       }
     }, 500);
+  };
+
+  const renderGuidedUserInfo = () => {
+    if (currentUserInfoField >= userInfoQuestions.length) return null;
+
+    return (
+      <div className="px-4 py-6 md:p-8 min-h-screen bg-black text-terminal-light flex flex-col justify-center">
+        <div className="max-w-4xl mx-auto">
+          <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
+            {/* Terminal header */}
+            <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
+              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+              <span className="ml-4 text-terminal-accent/70 text-sm">guided_protocol.exe</span>
+            </div>
+            
+            {showingResponse ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-terminal-accent/60 text-left"
+              >
+                <AnimatedText
+                  text="  processing response..."
+                  speed={20}
+                  className="text-terminal-accent/60 text-left"
+                />
+              </motion.div>
+            ) : (
+              <div className="space-y-4">
+                <AnimatedText
+                  text={`> ${userInfoQuestions[currentUserInfoField]}`}
+                  speed={25}
+                  className="text-terminal-light text-left"
+                  onComplete={() => setQuestionComplete(true)}
+                />
+                
+                {questionComplete && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-start text-left"
+                  >
+                    <span className="text-terminal-light mr-2">></span>
+                    <div className="flex-1">
+                      <span className="text-terminal-light">{currentInput}</span>
+                      <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderQuestion = () => {
@@ -489,6 +599,10 @@ const ConversationEngine: React.FC = () => {
 
   if (phase === 'open-transition') {
     return renderOpenTransition();
+  }
+
+  if (phase === 'guided-userinfo') {
+    return renderGuidedUserInfo();
   }
 
   if (phase === 'open-conversation') {
