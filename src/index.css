@@ -34,6 +34,10 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+    
+    /* Terminal colors */
+    --terminal-light: #f0f0f0;
+    --terminal-accent: #00ff41;
   }
 }
 
@@ -48,7 +52,28 @@
 }
 
 @layer utilities {
-  .text-glow {
-    text-shadow: 0 0 5px theme('colors.terminal.accent');
+  .text-terminal-light {
+    color: var(--terminal-light);
   }
+  
+  .text-terminal-accent {
+    color: var(--terminal-accent);
+  }
+  
+  .bg-terminal-accent {
+    background-color: var(--terminal-accent);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 5px var(--terminal-accent);
+  }
+  
+  .animate-cursor-blink {
+    animation: blink 1s infinite;
+  }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
