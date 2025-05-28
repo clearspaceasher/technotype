@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -46,7 +47,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
       if (e.key === "Enter" && selectedPath) {
         // Trigger bump animation
         setBump(true);
-        setTimeout(() => setBump(false), 200);
+        setTimeout(() => setBump(false), 300);
         // Confirm selection with Enter
         setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
       } else if (e.key === "1" || e.key === "2") {
@@ -77,14 +78,14 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   }
 
   return (
-    <motion.div
-      className="min-h-screen bg-black text-terminal-light p-8 font-mono"
-      animate={bump ? { scale: [1, 1.02, 1] } : {}}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
-    >
+    <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
       <div className="max-w-4xl mx-auto">
         {/* Terminal with outline */}
-        <div className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80">
+        <motion.div 
+          className="border border-terminal-accent/50 rounded-lg p-6 bg-black/80"
+          animate={bump ? { y: [-2, 0], scale: [1, 1.005, 1] } : {}}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
           {/* Terminal header */}
           <div className="flex items-center mb-6 pb-4 border-b border-terminal-accent/30">
             <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
@@ -143,9 +144,9 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
               </motion.div>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
