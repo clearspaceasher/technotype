@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -112,7 +111,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className={`text-left ${entry.type === 'question' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
+                className={`text-left break-words ${entry.type === 'question' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
               >
                 {entry.type === 'question' ? `> ${entry.text}` : `  ${entry.text}`}
               </motion.div>
@@ -146,7 +145,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
               <AnimatedText
                 text={currentQuestionText}
                 speed={25}
-                className="text-terminal-light text-left"
+                className="text-terminal-light text-left break-words"
                 onComplete={() => setQuestionComplete(true)}
               />
               
@@ -154,11 +153,13 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex items-center text-left"
+                  className="flex items-start text-left"
                 >
-                  <span className="text-terminal-light mr-2">{'>'}</span>
-                  <span className="text-terminal-light">{currentInput}</span>
-                  <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
+                  <span className="text-terminal-light mr-2 flex-shrink-0">{'>'}</span>
+                  <div className="flex-1">
+                    <span className="text-terminal-light break-words">{currentInput}</span>
+                    <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
+                  </div>
                 </motion.div>
               )}
             </motion.div>
