@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedText from "./AnimatedText";
@@ -14,6 +15,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<Array<{type: 'question' | 'answer', text: string}>>([]);
   const [isBumping, setIsBumping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   // Placeholder questions - will be replaced with AI integration later
   const questions = [
@@ -39,8 +41,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
-          // Trigger bump animation
+          // Trigger bump animation and snap back scale
           setIsBumping(true);
+          setIsTyping(false);
           setTimeout(() => setIsBumping(false), 200);
           
           const newAnswers = [...answers, currentInput.trim()];
@@ -70,8 +73,10 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => prev.slice(0, -1));
+        setIsTyping(prev => prev.slice(0, -1).length > 0);
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
+        setIsTyping(true);
       }
     };
 
@@ -113,7 +118,16 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           
           {/* Current question */}
           {currentQuestion < questions.length && (
-            <div className="space-y-4">
+            <motion.div 
+              className="space-y-4"
+              animate={{ 
+                scale: isTyping ? 1.02 : 1 
+              }}
+              transition={{ 
+                duration: 0.15, 
+                ease: "easeOut" 
+              }}
+            >
               <AnimatedText
                 text={currentQuestionText}
                 speed={25}
@@ -146,7 +160,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                   />
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           )}
         </motion.div>
       </div>
