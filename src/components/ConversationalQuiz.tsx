@@ -81,7 +81,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
         ]);
       }
 
-      setCurrentQuestion(question);
+      setCurrentQuestion(question || nextQuestion); // Use the full nextQuestion if no comment/question split
 
       // If we've reached 10 questions, generate the technotype
       if (newHistory.length >= 20) { // 10 questions * 2 (question + answer)

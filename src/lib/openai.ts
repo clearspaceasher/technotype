@@ -53,6 +53,11 @@ export async function generateNextQuestion(
   conversationHistory: ConversationMessage[],
   currentQuestionCount: number
 ): Promise<string> {
+  // If this is the first question (no conversation history), return a fixed question
+  if (conversationHistory.length === 0) {
+    return "How do you typically start your day with technology?";
+  }
+
   const prompt = `You are an AI conducting a technology personality assessment conversation. 
 The goal is to understand the user's relationship with technology and build a comprehensive technotype profile.
 You have asked ${currentQuestionCount} questions so far.
