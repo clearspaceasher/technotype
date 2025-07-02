@@ -31,10 +31,16 @@ cd <YOUR_PROJECT_NAME>
 
 # Step 3: Install the necessary dependencies.
 npm i
+cd Backend && npm i && cd ..
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Step 4: Set up environment variables (see setup.md for details)
+# Create Backend/.env.local with your OpenAI API key
+
+# Step 5: Start both frontend and backend servers.
+npm run dev:full
 ```
+
+**For detailed setup instructions, see [setup.md](./setup.md)**
 
 **Edit a file directly in GitHub**
 

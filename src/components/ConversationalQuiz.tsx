@@ -20,30 +20,34 @@ interface ConversationalQuizProps {
 }
 
 const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) => {
-  const [currentQuestion, setCurrentQuestion] = useState("");
+  const [currentQuestion, setCurrentQuestion] = useState<string>("");
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionComplete, setQuestionComplete] = useState(false);
   const [showingResponse, setShowingResponse] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
   const [isBumping, setIsBumping] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Initialize with first question
   useEffect(() => {
-    const initializeQuiz = async () => {
-      try {
-        const firstQuestion = await generateNextQuestion([], 0);
-        setCurrentQuestion(firstQuestion);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Failed to initialize quiz:', error);
-        setIsLoading(false);
-      }
-    };
     initializeQuiz();
   }, []);
+
+  async function initializeQuiz() {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const question = await generateNextQuestion(conversationHistory, 0);
+      setCurrentQuestion(question);
+      setConversationHistory([{ role: 'assistant' as const, content: question }]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to initialize quiz');
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const currentQuestionText = currentQuestion ? `${'>'}  ${currentQuestion}` : "";
 
@@ -57,41 +61,31 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     navigate('/');
   };
 
-  const handleAnswer = async (answer: string) => {
+  async function handleAnswer(answer: string) {
     try {
-      // Add to conversation history
-      const newHistory: ConversationMessage[] = [
-        ...conversationHistory,
-        { role: 'assistant', content: currentQuestion },
-        { role: 'user', content: answer }
-      ];
+      setIsLoading(true);
+      setError(null);
+      
+      // Add user's answer to conversation
+      const newHistory = [...conversationHistory, { role: 'user' as const, content: answer }];
       setConversationHistory(newHistory);
 
-      // Generate next question
-      const nextQuestion = await generateNextQuestion(newHistory, newHistory.length / 2);
-      
-      // Parse the comment and question (first line is comment, second line is question)
-      const [comment, question] = nextQuestion.split('\n').map(line => line.trim());
-
-      // Only add comment to conversation history if we're past the first question
-      if (comment && newHistory.length > 2) { // More than 2 messages means we're past the first Q&A
-        setConversationHistory(prev => [
-          ...prev,
-          { role: 'assistant', content: comment }
-        ]);
-      }
-
-      setCurrentQuestion(question || nextQuestion); // Use the full nextQuestion if no comment/question split
+      // Get next question
+      const nextQuestion = await generateNextQuestion(newHistory, newHistory.length);
+      setCurrentQuestion(nextQuestion);
+      setConversationHistory([...newHistory, { role: 'assistant' as const, content: nextQuestion }]);
 
       // If we've reached 10 questions, generate the technotype
-      if (newHistory.length >= 20) { // 10 questions * 2 (question + answer)
+      if (newHistory.length >= 10) {
         const result = await generateTechnotypeFromConversation(newHistory);
         onComplete(result.technotype, result.description);
       }
-    } catch (error) {
-      console.error('Failed to process answer:', error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate next question');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -129,6 +123,33 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [questionComplete, showingResponse, currentInput, answers, isLoading]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="border border-red-500/50 rounded-lg p-6 bg-black/80">
+            <h2 className="text-red-400 text-xl mb-4">Connection Error</h2>
+            <p className="text-red-300 mb-4">{error}</p>
+            <div className="space-y-2 text-sm text-terminal-accent/70">
+              <p>Please check:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Backend server is running on port 3001</li>
+                <li>OpenAI API key is configured</li>
+                <li>No firewall blocking the connection</li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-4 py-2 bg-terminal-accent/20 border border-terminal-accent/50 text-terminal-light hover:bg-terminal-accent/30 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

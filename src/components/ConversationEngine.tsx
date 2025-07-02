@@ -181,6 +181,8 @@ const ConversationEngine: React.FC = () => {
           setPhase('results');
         } catch (error) {
           console.error('Failed to generate technotype:', error);
+          // Show user-friendly error message
+          alert(`Failed to generate technotype: ${error instanceof Error ? error.message : 'Unknown error'}. Using fallback archetype.`);
           // Fallback to default archetype if generation fails
           const archetype = calculateArchetype(answers);
           setUserArchetype(archetype);
