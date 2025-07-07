@@ -14,7 +14,10 @@ export interface TechnotypeResult {
   description: string;
 }
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Dynamic API base URL that works both locally and in production
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001/api'  // In development, use localhost
+  : '/api';  // In production, use relative paths for Vercel functions
 
 // Helper function to check if server is running
 async function checkServerHealth(): Promise<boolean> {
@@ -25,6 +28,10 @@ async function checkServerHealth(): Promise<boolean> {
     });
     return response.ok;
   } catch (error) {
+    // In production, don't show server error since Vercel functions are always available
+    if (window.location.hostname !== 'localhost') {
+      return true;
+    }
     return false;
   }
 }
@@ -54,10 +61,12 @@ async function makeApiCall<T>(
       return await response.json();
     } catch (error) {
       if (attempt === retries) {
-        // Check if server is running
-        const serverRunning = await checkServerHealth();
-        if (!serverRunning) {
-          throw new Error('Backend server is not running. Please start the server first.');
+        // Check if server is running (only in development)
+        if (window.location.hostname === 'localhost') {
+          const serverRunning = await checkServerHealth();
+          if (!serverRunning) {
+            throw new Error('Backend server is not running. Please start the server first.');
+          }
         }
         throw error;
       }
