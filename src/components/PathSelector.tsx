@@ -19,6 +19,7 @@ interface UserInfo {
   name: string;
   age: string;
   gender: string;
+  randomAnswer: string;
 }
 
 interface PathSelectorProps {

@@ -18,6 +18,7 @@ interface UserInfo {
   name: string;
   age: string;
   gender: string;
+  randomAnswer: string;
 }
 
 interface UserInfoFormProps {
@@ -25,21 +26,44 @@ interface UserInfoFormProps {
 }
 
 const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
-  const [currentField, setCurrentField] = useState<'name' | 'age' | 'gender'>('name');
+  const [currentField, setCurrentField] = useState<'name' | 'age' | 'gender' | 'random'>('name');
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: '',
     age: '',
-    gender: ''
+    gender: '',
+    randomAnswer: ''
   });
   const [currentInput, setCurrentInput] = useState("");
   const [promptComplete, setPromptComplete] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [bump, setBump] = useState(false);
+  const [randomQuestion, setRandomQuestion] = useState("");
   const navigate = useNavigate();
+
+  // Random incredibly specific questions
+  const randomQuestions = [
+    "if you could only eat cereal with one specific utensil for the rest of your life, would you choose a dessert spoon or a tea spoon?",
+    "when walking through automatic doors, do you slow down slightly or maintain your exact pace?",
+    "if you had to choose between socks that are always slightly damp or shoes that squeak only on tuesdays, which would you pick?",
+    "do you think the letter 'Q' feels lonely without 'U' in words like 'qi'?",
+    "if elevators could only play one song forever, should it be elevator music or the jeopardy theme?",
+    "would you rather have fingernails that grow backwards or toenails that change color with your mood?",
+    "if you could only communicate through haikus on wednesdays, would you embrace it or move to a place where wednesday doesn't exist?",
+    "do you believe doorknobs have a preferred direction of turning?",
+    "if shadows could taste things, what do you think your shadow would want to eat first?",
+    "would you rather hiccup in musical notes or sneeze in different accents?",
+    "if you had to assign a personality to the number 7, would it be more of an introvert or extrovert?",
+    "do you think plants judge us for talking to them or do they appreciate the conversation?",
+    "if you could only use stairs that were either too tall or too short, which would cause you less existential dread?",
+    "would you rather have a refrigerator that hums showtunes or a microwave that beeps in morse code?",
+    "if you had to choose a theme song that plays every time you enter a room, would it be 8 seconds or 23 seconds long?"
+  ];
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
     age: "> how old are you?\n\n> ",
-    gender: "> what's your gender?\n\n> "
+    gender: "> what's your gender?\n\n> ",
+    random: `> ${randomQuestion}\n\n> `
   };
 
   const currentPrompt = prompts[currentField];
@@ -48,6 +72,12 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
     navigate('/');
   };
 
+  // Set random question when component mounts
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * randomQuestions.length);
+    setRandomQuestion(randomQuestions[randomIndex]);
+  }, []);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!promptComplete) return;
@@ -55,6 +85,18 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
       if (e.key === "Enter") {
         if (currentInput.trim()) {
           let finalValue = currentInput.trim();
+          
+          // Validate age is a number
+          if (currentField === 'age') {
+            if (!/^\d+$/.test(currentInput.trim())) {
+              setShowError(true);
+              setTimeout(() => {
+                setShowError(false);
+                setCurrentInput("");
+              }, 2000);
+              return;
+            }
+          }
           
           // Handle gender shortcuts
           if (currentField === 'gender') {
@@ -72,7 +114,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           setBump(true);
           setTimeout(() => setBump(false), 300);
 
-          const newUserInfo = { ...userInfo, [currentField]: finalValue };
+          const newUserInfo = { ...userInfo, [currentField === 'random' ? 'randomAnswer' : currentField]: finalValue };
           setUserInfo(newUserInfo);
           setCurrentInput("");
           setPromptComplete(false);
@@ -82,6 +124,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
             setCurrentField('age');
           } else if (currentField === 'age') {
             setCurrentField('gender');
+          } else if (currentField === 'gender') {
+            setCurrentField('random');
           } else {
             // All fields complete
             setTimeout(() => onComplete(newUserInfo), 500);
@@ -89,14 +133,16 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => prev.slice(0, -1));
+        setShowError(false);
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
+        setShowError(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [promptComplete, currentInput, currentField, userInfo, onComplete]);
+  }, [promptComplete, currentInput, currentField, userInfo, onComplete, randomQuestion]);
 
   return (
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
@@ -159,6 +205,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                 {`> gender: ${userInfo.gender}`}
               </div>
             )}
+            {userInfo.randomAnswer && (
+              <div className="text-left text-terminal-light/70">
+                {`> answer: ${userInfo.randomAnswer}`}
+              </div>
+            )}
             
             {/* Current prompt and input on same line */}
             <div className="text-left">
@@ -179,6 +230,20 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                 </motion.span>
               )}
             </div>
+            
+            {showError && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-400 mt-4 text-left"
+              >
+                <AnimatedText
+                  text={currentField === 'age' ? "please enter a valid number" : "invalid input"}
+                  speed={20}
+                  className="text-red-400 text-left"
+                />
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </div>
