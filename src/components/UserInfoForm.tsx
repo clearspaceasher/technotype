@@ -33,14 +33,13 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   });
   const [currentInput, setCurrentInput] = useState("");
   const [promptComplete, setPromptComplete] = useState(false);
-  const [showError, setShowError] = useState(false);
   const [bump, setBump] = useState(false);
   const navigate = useNavigate();
 
   const prompts = {
     name: "> what should we call you?\n\n> ",
     age: "> how old are you?\n\n> ",
-    gender: "> what's your gender? (m/f/other)\n\n> "
+    gender: "> what's your gender?\n\n> "
   };
 
   const currentPrompt = prompts[currentField];
@@ -55,15 +54,17 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
+          let finalValue = currentInput.trim();
+          
+          // Handle gender shortcuts
           if (currentField === 'gender') {
-            const validGenders = ['m', 'f', 'male', 'female', 'other', 'non-binary', 'nb'];
-            if (!validGenders.includes(currentInput.toLowerCase().trim())) {
-              setShowError(true);
-              setTimeout(() => {
-                setShowError(false);
-                setCurrentInput("");
-              }, 2000);
-              return;
+            const input = currentInput.toLowerCase().trim();
+            if (input === 'm') {
+              finalValue = 'male';
+            } else if (input === 'f') {
+              finalValue = 'female';
+            } else if (input === 'o') {
+              finalValue = 'other';
             }
           }
 
@@ -71,7 +72,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           setBump(true);
           setTimeout(() => setBump(false), 300);
 
-          const newUserInfo = { ...userInfo, [currentField]: currentInput.trim() };
+          const newUserInfo = { ...userInfo, [currentField]: finalValue };
           setUserInfo(newUserInfo);
           setCurrentInput("");
           setPromptComplete(false);
@@ -88,10 +89,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
         }
       } else if (e.key === "Backspace") {
         setCurrentInput(prev => prev.slice(0, -1));
-        setShowError(false);
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
-        setShowError(false);
       }
     };
 
@@ -180,20 +179,6 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                 </motion.span>
               )}
             </div>
-            
-            {showError && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 mt-4 text-left"
-              >
-                <AnimatedText
-                  text="please enter m, f, or other"
-                  speed={20}
-                  className="text-red-400 text-left"
-                />
-              </motion.div>
-            )}
           </div>
         </motion.div>
       </div>
