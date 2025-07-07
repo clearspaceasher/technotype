@@ -42,6 +42,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [inputLocked, setInputLocked] = useState(false);
   const [showSarcasm, setShowSarcasm] = useState(false);
   const [sarcasmText, setSarcasmText] = useState("");
+  const [showLoading, setShowLoading] = useState(false);
   const navigate = useNavigate();
 
   // Random incredibly specific questions
@@ -279,7 +280,16 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
               const randomIndex = Math.floor(Math.random() * sarcasmResponses.length);
               setSarcasmText(sarcasmResponses[randomIndex]);
               setShowSarcasm(true);
-            }, 1000);
+              
+              // Show loading message after sarcasm, then complete
+              setTimeout(() => {
+                setShowLoading(true);
+                setTimeout(() => {
+                  const newUserInfo = { ...userInfo, randomAnswer: currentInput.trim() };
+                  onComplete(newUserInfo);
+                }, 2000);
+              }, 1500);
+            }, 2000);
           }
           
           setCurrentInput(prev => prev + e.key);
@@ -392,6 +402,21 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                   text={sarcasmText}
                   speed={20}
                   className="text-terminal-accent/70 text-left"
+                />
+              </motion.div>
+            )}
+            
+            {/* Show loading message */}
+            {showLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-left mt-2"
+              >
+                <AnimatedText
+                  text="loading personality analysis..."
+                  speed={30}
+                  className="text-terminal-light/70 text-left"
                 />
               </motion.div>
             )}
