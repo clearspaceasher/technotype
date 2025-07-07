@@ -227,21 +227,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
             }
           }
           
-          // Handle gender shortcuts
-          if (currentField === 'gender') {
-            const input = currentInput.toLowerCase().trim();
-            console.log('Gender field - input:', input, 'currentField:', currentField);
-            if (input === 'm') {
-              finalValue = 'male';
-              console.log('Expanded m to male');
-            } else if (input === 'f') {
-              finalValue = 'female';
-              console.log('Expanded f to female');
-            } else if (input === 'o') {
-              finalValue = 'other';
-              console.log('Expanded o to other');
-            }
-          }
+          // Handle gender shortcuts (removed - now handled in typing logic)
 
           // Trigger bump animation
           setBump(true);
@@ -296,7 +282,21 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
             }, 2000);
           }
           
-          setCurrentInput(prev => prev + e.key);
+          let newInput = currentInput + e.key;
+          
+          // Handle gender shortcuts automatically
+          if (currentField === 'gender') {
+            const input = newInput.toLowerCase().trim();
+            if (input === 'm') {
+              newInput = 'male';
+            } else if (input === 'f') {
+              newInput = 'female';
+            } else if (input === 'o') {
+              newInput = 'other';
+            }
+          }
+          
+          setCurrentInput(newInput);
           setShowError(false);
         }
       }
