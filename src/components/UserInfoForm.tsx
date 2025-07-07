@@ -284,8 +284,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           
           let newInput = currentInput + e.key;
           
-          // Handle gender shortcuts automatically
-          if (currentField === 'gender') {
+          // Handle gender shortcuts automatically (only once)
+          if (currentField === 'gender' && currentInput === '') {
             const input = newInput.toLowerCase().trim();
             if (input === 'm') {
               newInput = 'male';
