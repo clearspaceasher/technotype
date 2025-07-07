@@ -6,6 +6,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY is missing in environment variables!');
+      return res.status(500).json({ error: 'OPENAI_API_KEY is missing in environment variables!' });
+    }
+
     const { conversationHistory, currentQuestionCount } = req.body;
     
     const openai = new OpenAI({
@@ -38,6 +43,7 @@ Respond with ONLY the next question, and nothing else. Do not include any commen
     res.json(completion.choices[0].message.content || '');
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: error.message });
+    if (error.stack) console.error(error.stack);
+    res.status(500).json({ error: error.message, stack: error.stack });
   }
 } 
