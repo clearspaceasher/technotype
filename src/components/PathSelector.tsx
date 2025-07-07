@@ -28,22 +28,16 @@ interface PathSelectorProps {
 const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
   const [phase, setPhase] = useState<'user-info' | 'path-selection'>('user-info');
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [currentInput, setCurrentInput] = useState("");
-  const [showError, setShowError] = useState(false);
   const [promptComplete, setPromptComplete] = useState(false);
-  const [selectedPath, setSelectedPath] = useState<"1" | "2" | null>(null);
   const [bump, setBump] = useState(false);
   const navigate = useNavigate();
 
   const promptText = `> welcome, ${userInfo?.name || 'user'}.
 
-> choose your path:
-
-[1] guided protocol
-    a structured diagnostic of your digital psyche
-
-[2] open sequence  
+> initiating open sequence...
     no map. no right answers. just a conversation.
+
+> press enter to begin
 
 > `;
 
@@ -60,34 +54,18 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (phase !== 'path-selection' || !promptComplete) return;
       
-      if (e.key === "Enter" && selectedPath) {
+      if (e.key === "Enter") {
         // Trigger bump animation
         setBump(true);
         setTimeout(() => setBump(false), 300);
-        // Confirm selection with Enter
-        setTimeout(() => onPathSelected(parseInt(selectedPath) as 1 | 2, userInfo!), 500);
-      } else if (e.key === "1" || e.key === "2") {
-        setSelectedPath(e.key as "1" | "2");
-        setCurrentInput(e.key);
-        setShowError(false);
-      } else if (e.key === "Backspace") {
-        setSelectedPath(null);
-        setCurrentInput("");
-      } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-        // Any other single character input
-        setCurrentInput(e.key);
-        setSelectedPath(null);
-        setShowError(true);
-        setTimeout(() => {
-          setShowError(false);
-          setCurrentInput("");
-        }, 1500);
+        // Start open sequence (path 2)
+        setTimeout(() => onPathSelected(2, userInfo!), 500);
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [onPathSelected, promptComplete, selectedPath, phase, userInfo]);
+  }, [onPathSelected, promptComplete, phase, userInfo]);
 
   if (phase === 'user-info') {
     return <UserInfoForm onComplete={handleUserInfoComplete} />;
@@ -138,7 +116,7 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
           
           {/* Terminal content */}
           <div className="space-y-2">
-            {/* Prompt and input on same line */}
+            {/* Prompt and cursor */}
             <div className="text-left">
               <AnimatedText
                 text={promptText}
@@ -152,39 +130,10 @@ const PathSelector: React.FC<PathSelectorProps> = ({ onPathSelected }) => {
                   animate={{ opacity: 1 }}
                   className="inline"
                 >
-                  <span className="text-terminal-light">{currentInput}</span>
                   <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
                 </motion.span>
               )}
             </div>
-            
-            {selectedPath && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-terminal-accent mt-4 text-left"
-              >
-                <AnimatedText
-                  text="selection confirmed. press enter to continue..."
-                  speed={20}
-                  className="text-terminal-accent text-left"
-                />
-              </motion.div>
-            )}
-            
-            {showError && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 mt-4 text-left"
-              >
-                <AnimatedText
-                  text="invalid input. choose [1] or [2]"
-                  speed={20}
-                  className="text-red-400 text-left"
-                />
-              </motion.div>
-            )}
           </div>
         </motion.div>
       </div>
