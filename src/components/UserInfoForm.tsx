@@ -38,6 +38,10 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   const [showError, setShowError] = useState(false);
   const [bump, setBump] = useState(false);
   const [randomQuestion, setRandomQuestion] = useState("");
+  const [timerActive, setTimerActive] = useState(false);
+  const [inputLocked, setInputLocked] = useState(false);
+  const [showSarcasm, setShowSarcasm] = useState(false);
+  const [sarcasmText, setSarcasmText] = useState("");
   const navigate = useNavigate();
 
   // Random incredibly specific questions
@@ -144,6 +148,40 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
     "If someone asked how you're doing and you had to respond using only kitchen utensils, what would you hand them?"
   ];
 
+  // Sarcastic responses for random question timer
+  const sarcasmResponses = [
+    "Too honest. Abort.",
+    "Cool trauma dump. Anyway…",
+    "Nope. We're not doing feelings today.",
+    "That looked suspiciously introspective.",
+    "You almost had a breakthrough. Gross.",
+    "This isn't therapy, bestie.",
+    "bruh?",
+    "Oop—too real.",
+    "I'm just here for vibes, not your backstory.",
+    "Wow, okay. Didn't ask for depth.",
+    "Don't get emotional. This is a quiz, not a memoir.",
+    "I'm scared now.",
+    "Oh no, you were about to be vulnerable.",
+    "Loving the overshare. Moving on.",
+    "That looked dangerously self-aware.",
+    "Okay Dr. Phil, relax.",
+    "This isn't that kind of app.",
+    "We don't process things here.",
+    "That's a journal thought. Next.",
+    "Wow. Let's... not unpack that.",
+    "Big yikes. Big skip.",
+    "nah",
+    "And...that's enough honesty for one day.",
+    "Save it for your group chat.",
+    "I'm gonna pretend I didn't see that.",
+    "Absolutely not.",
+    "You lost me.",
+    "Can't relate.",
+    "What are you, self-aware or something?",
+    "Delete that."
+  ];
+
   const prompts = {
     name: "> what should we call you?\n\n> ",
     age: "> how old are you?\n\n> ",
@@ -166,6 +204,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!promptComplete) return;
+      
+      // Prevent Enter when input is locked (random question timer)
+      if (e.key === "Enter" && inputLocked && currentField === 'random') {
+        return;
+      }
       
       if (e.key === "Enter") {
         if (currentInput.trim()) {
@@ -203,6 +246,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           setUserInfo(newUserInfo);
           setCurrentInput("");
           setPromptComplete(false);
+          
+          // Reset timer states when moving to next field
+          setTimerActive(false);
+          setInputLocked(false);
+          setShowSarcasm(false);
 
           // Move to next field or complete
           if (currentField === 'name') {
@@ -217,17 +265,32 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           }
         }
       } else if (e.key === "Backspace") {
-        setCurrentInput(prev => prev.slice(0, -1));
-        setShowError(false);
+        if (!inputLocked) {
+          setCurrentInput(prev => prev.slice(0, -1));
+          setShowError(false);
+        }
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-        setCurrentInput(prev => prev + e.key);
-        setShowError(false);
+        if (!inputLocked) {
+          // Start timer on first character for random question
+          if (currentField === 'random' && currentInput === "" && !timerActive) {
+            setTimerActive(true);
+            setTimeout(() => {
+              setInputLocked(true);
+              const randomIndex = Math.floor(Math.random() * sarcasmResponses.length);
+              setSarcasmText(sarcasmResponses[randomIndex]);
+              setShowSarcasm(true);
+            }, 1000);
+          }
+          
+          setCurrentInput(prev => prev + e.key);
+          setShowError(false);
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [promptComplete, currentInput, currentField, userInfo, onComplete, randomQuestion]);
+  }, [promptComplete, currentInput, currentField, userInfo, onComplete, randomQuestion, inputLocked, timerActive, sarcasmResponses]);
 
   return (
     <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
@@ -310,11 +373,28 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
                   animate={{ opacity: 1 }}
                   className="inline"
                 >
-                  <span className="text-terminal-light">{currentInput}</span>
+                  <span className={inputLocked && currentField === 'random' ? "text-red-400" : "text-terminal-light"}>
+                    {currentInput}
+                  </span>
                   <span className="inline-block w-2 h-4 bg-terminal-accent ml-1 animate-pulse"></span>
                 </motion.span>
               )}
             </div>
+            
+            {/* Show sarcastic response */}
+            {showSarcasm && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-left mt-2"
+              >
+                <AnimatedText
+                  text={sarcasmText}
+                  speed={20}
+                  className="text-terminal-accent/70 text-left"
+                />
+              </motion.div>
+            )}
             
             {showError && (
               <motion.div
