@@ -230,12 +230,16 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onComplete }) => {
           // Handle gender shortcuts
           if (currentField === 'gender') {
             const input = currentInput.toLowerCase().trim();
+            console.log('Gender field - input:', input, 'currentField:', currentField);
             if (input === 'm') {
               finalValue = 'male';
+              console.log('Expanded m to male');
             } else if (input === 'f') {
               finalValue = 'female';
+              console.log('Expanded f to female');
             } else if (input === 'o') {
               finalValue = 'other';
+              console.log('Expanded o to other');
             }
           }
 
