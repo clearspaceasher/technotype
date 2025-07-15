@@ -132,11 +132,11 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
             <h2 className="text-red-400 text-xl mb-4">Connection Error</h2>
             <p className="text-red-300 mb-4">{error}</p>
             <div className="space-y-2 text-sm text-terminal-accent/70">
-              <p>Please check:</p>
+              <p>If you see this error, the backend serverless function is down or cannot reach OpenAI.</p>
               <ul className="list-disc list-inside space-y-1">
-                <li>Backend server is running on port 3001</li>
-                <li>OpenAI API key is configured</li>
-                <li>No firewall blocking the connection</li>
+                <li>Check your OpenAI API key in the Vercel dashboard</li>
+                <li>Check your Vercel deployment status</li>
+                <li>If the problem persists, try redeploying or contact support</li>
               </ul>
             </div>
             <button 
