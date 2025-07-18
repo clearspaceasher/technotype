@@ -11,6 +11,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'OPENAI_API_KEY is missing in environment variables!' });
     }
 
+    console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY?.slice(0, 8) + '...');
+
     const { conversationHistory, currentQuestionCount } = req.body;
     
     const openai = new OpenAI({
@@ -26,11 +28,11 @@ ${conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
 
 Generate ONE engaging question that will help build the user's technotype profile. 
 The question should be:
-- Concise and easy to answer (1-2 sentences max)
+- Concise and easy to answer (1 sentence max)
 - Relevant to the conversation so far
 - Thought-provoking but not too complex
 - Have a stoic, logical, slightly robotic tone
-- Focused on technology habits, preferences, or feelings
+- Focused on technology habits and preferences
 
 Respond with ONLY the next question, and nothing else. Do not include any commentary, analysis, or extra lines. Just the question.`;
 
