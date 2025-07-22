@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 
+console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY?.slice(0, 10), "...", process.env.OPENAI_API_KEY?.length);
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
