@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const { conversationHistory, currentQuestionCount } = req.body;
     
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: process.env.OPENAI_API_KEY?.trim().replace(/^Bearer\\s+/i, "")
     });
     
     const prompt = `You are an AI conducting a technology personality assessment conversation. 
@@ -38,7 +38,7 @@ Respond with ONLY the next question, and nothing else. Do not include any commen
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4-turbo",
       temperature: 0.7
     });
 
