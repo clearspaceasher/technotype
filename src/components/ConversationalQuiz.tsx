@@ -208,15 +208,17 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
           {/* Conversation history */}
           <div className="space-y-2 mb-4">
             {conversationHistory.map((entry, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`text-left break-words ${entry.role === 'assistant' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
-              >
-                {entry.role === 'assistant' ? `> ${entry.content}` : `  ${entry.content}`}
-              </motion.div>
+              (index !== conversationHistory.length - 1 || entry.role !== 'assistant') && (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`text-left break-words ${entry.role === 'assistant' ? 'text-terminal-light' : 'text-terminal-accent/80'}`}
+                >
+                  {entry.role === 'assistant' ? `> ${entry.content}` : `  ${entry.content}`}
+                </motion.div>
+              )
             ))}
           </div>
           {/* Current input prompt (only after assistant message) */}
