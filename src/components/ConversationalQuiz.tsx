@@ -20,7 +20,6 @@ interface ConversationalQuizProps {
 }
 
 const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) => {
-  const [currentQuestion, setCurrentQuestion] = useState<string>("");
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionComplete, setQuestionComplete] = useState(false);
@@ -28,6 +27,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
   const [isBumping, setIsBumping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -37,23 +37,27 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
   async function initializeQuiz() {
     try {
+      setIsInitializing(true);
       setIsLoading(true);
       setError(null);
       const question = await generateNextQuestion([], 0);
-      setCurrentQuestion(question);
-      setConversationHistory([]); // Start with empty history
+      setConversationHistory([{ role: 'assistant' as const, content: question }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize quiz');
     } finally {
+      setIsInitializing(false);
       setIsLoading(false);
     }
   }
+
+  const currentQuestion = conversationHistory.length > 0 && conversationHistory[conversationHistory.length - 1].role === 'assistant'
+    ? conversationHistory[conversationHistory.length - 1].content
+    : "";
 
   const currentQuestionText = currentQuestion ? `${'>'}  ${currentQuestion}` : "";
 
   // Calculate scale based on input length - small increments of 0.005 per character
   const currentScale = 1 + (currentInput.length * 0.005);
-  
   // Calculate inverse zoom for the page - as text gets bigger, page zooms out
   const pageZoom = 1 / currentScale;
 
@@ -65,21 +69,19 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     try {
       setIsLoading(true);
       setError(null);
-      
       // Add user's answer to conversation
       const newHistory = [...conversationHistory, { role: 'user' as const, content: answer }];
-      setConversationHistory(newHistory);
-
-      // Get next question
-      const nextQuestion = await generateNextQuestion(newHistory, newHistory.length);
-      setCurrentQuestion(nextQuestion);
-      setConversationHistory([...newHistory, { role: 'assistant' as const, content: nextQuestion }]);
-
       // If we've reached 10 questions, generate the technotype
-      if (newHistory.length >= 10) {
+      if (newHistory.filter(msg => msg.role === 'user').length >= 10) {
+        setConversationHistory(newHistory);
         const result = await generateTechnotypeFromConversation(newHistory);
         onComplete(result.technotype, result.description, result.summary);
+        return;
       }
+      // Get next question
+      const nextQuestion = await generateNextQuestion(newHistory, newHistory.filter(msg => msg.role === 'user').length);
+      const updatedHistory = [...newHistory, { role: 'assistant' as const, content: nextQuestion }];
+      setConversationHistory(updatedHistory);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate next question');
     } finally {
@@ -89,40 +91,29 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!questionComplete || showingResponse || isLoading) return;
-      
+      if (!questionComplete || showingResponse || isLoading || isInitializing) return;
       if (e.key === "Enter") {
         if (currentInput.trim()) {
-          // Trigger bump animation and snap back scale
           setIsBumping(true);
           setTimeout(() => setIsBumping(false), 200);
-          
           const newAnswers = [...answers, currentInput.trim()];
           setAnswers(newAnswers);
-          
-          // Reset input immediately to snap scale back to 1
           setCurrentInput("");
           setShowingResponse(true);
-          
-          // Process the answer and move to next question
           handleAnswer(currentInput.trim()).then(() => {
             setQuestionComplete(false);
             setShowingResponse(false);
           });
         }
       } else if (e.key === "Backspace") {
-        setCurrentInput(prev => {
-          const newInput = prev.slice(0, -1);
-          return newInput;
-        });
+        setCurrentInput(prev => prev.slice(0, -1));
       } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         setCurrentInput(prev => prev + e.key);
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [questionComplete, showingResponse, currentInput, answers, isLoading]);
+  }, [questionComplete, showingResponse, currentInput, answers, isLoading, isInitializing]);
 
   if (error) {
     return (
@@ -151,7 +142,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     );
   }
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
         <AnimatedText
@@ -214,7 +205,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
             <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
             <span className="ml-4 text-terminal-accent/70 text-sm">open_sequence.exe</span>
           </div>
-          
           {/* Conversation history */}
           <div className="space-y-2 mb-4">
             {conversationHistory.map((entry, index) => (
@@ -229,21 +219,8 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
               </motion.div>
             ))}
           </div>
-          
-          {/* Current question or processing state */}
-          {showingResponse ? (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-terminal-accent/60 text-left"
-            >
-              <AnimatedText
-                text="  processing response..."
-                speed={20}
-                className="text-terminal-accent/60 text-left"
-              />
-            </motion.div>
-          ) : currentQuestion && (
+          {/* Current input prompt (only after assistant message) */}
+          {!showingResponse && !isLoading && conversationHistory.length > 0 && conversationHistory[conversationHistory.length - 1].role === 'assistant' && (
             <motion.div 
               className="space-y-4"
               animate={{ 
@@ -260,7 +237,6 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                 className="text-terminal-light text-left break-words"
                 onComplete={() => setQuestionComplete(true)}
               />
-              
               {questionComplete && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -274,6 +250,20 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
                   </div>
                 </motion.div>
               )}
+            </motion.div>
+          )}
+          {/* Show processing animation only when showingResponse is true */}
+          {showingResponse && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-terminal-accent/60 text-left"
+            >
+              <AnimatedText
+                text="  processing response..."
+                speed={20}
+                className="text-terminal-accent/60 text-left"
+              />
             </motion.div>
           )}
         </motion.div>
