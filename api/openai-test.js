@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY?.trim().replace(/^Bearer\\s+/i, "") });
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: "Hello" }],
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4-turbo",
       temperature: 0.7,
       max_tokens: 10
     });
