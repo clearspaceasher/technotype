@@ -1,17 +1,20 @@
 import OpenAI from 'openai';
 
 export default async function handler(req, res) {
+  console.log('generate-technotype-conversation called:', req.method, req.body);
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
   try {
     const { conversationHistory } = req.body;
-    
+    if (!conversationHistory) {
+      return res.status(400).json({ error: 'Missing conversationHistory in request body.' });
+    }
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY
     });
-    
     const prompt = `Based on the following conversation, generate a technotype personality profile:
 
 Conversation:
@@ -28,15 +31,12 @@ Format your response as JSON:
   "description": "Detailed description...",
   "summary": "One-sentence summary..."
 }`;
-
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "gpt-4-turbo",
       temperature: 0.7
     });
-
     const content = completion.choices[0].message.content || '';
-    
     try {
       const result = JSON.parse(content);
       res.json(result);
