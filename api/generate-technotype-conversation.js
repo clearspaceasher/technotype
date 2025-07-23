@@ -33,7 +33,7 @@ Format your response as JSON:
 }`;
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4-turbo",
+      model: "gpt-3.5-turbo",
       temperature: 0.7
     });
     const content = completion.choices[0].message.content || '';
