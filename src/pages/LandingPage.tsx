@@ -133,15 +133,13 @@ const LandingPage: React.FC = () => {
                   </motion.div>
                 </a>
               </motion.div>
-              {/* Debug Button - Only show in development */}
-              {process.env.NODE_ENV !== 'production' && (
-                <Button
-                  className="mt-4 bg-red-600 text-white hover:bg-red-700 font-mono text-lg px-6 py-3 rounded-lg border-2 border-red-800 shadow-lg"
-                  onClick={() => navigate('/debug-technotype')}
-                >
-                  Debug: Go to Technotype Generation
-                </Button>
-              )}
+              {/* Debug Button - Always show for debugging */}
+              <Button
+                className="mt-4 bg-red-600 text-white hover:bg-red-700 font-mono text-lg px-6 py-3 rounded-lg border-2 border-red-800 shadow-lg"
+                onClick={() => navigate('/debug-technotype')}
+              >
+                Debug: Go to Technotype Generation
+              </Button>
             </>
           )}
         </div>
