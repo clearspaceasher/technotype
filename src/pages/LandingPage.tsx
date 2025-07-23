@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AnimatedText from "@/components/AnimatedText";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 const LandingPage: React.FC = () => {
   const [currentLine, setCurrentLine] = useState<number>(0);
@@ -105,32 +106,43 @@ const LandingPage: React.FC = () => {
 
           {/* CTA Button - Only show after all lines are typed */}
           {showCTA && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mt-16 mb-8"
-            >
-              <a 
-                href="/quiz" 
-                onClick={handleCtaClick}
-                className="group flex items-center justify-center gap-3 text-2xl md:text-4xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mt-16 mb-8"
               >
-                <motion.div 
-                  className="flex items-center"
-                  animate={figure8Path}
+                <a 
+                  href="/quiz" 
+                  onClick={handleCtaClick}
+                  className="group flex items-center justify-center gap-3 text-2xl md:text-4xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105"
                 >
-                  <motion.span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</motion.span>
-                  <AnimatedText
-                    text="explore your mind"
-                    speed={30}
-                    className="text-terminal-accent"
-                    bold={false}
-                    noWrap={true}
-                  />
-                </motion.div>
-              </a>
-            </motion.div>
+                  <motion.div 
+                    className="flex items-center"
+                    animate={figure8Path}
+                  >
+                    <motion.span className="absolute -left-9 group-hover:translate-x-2 transition-transform duration-300">→</motion.span>
+                    <AnimatedText
+                      text="explore your mind"
+                      speed={30}
+                      className="text-terminal-accent"
+                      bold={false}
+                      noWrap={true}
+                    />
+                  </motion.div>
+                </a>
+              </motion.div>
+              {/* Debug Button - Only show in development */}
+              {process.env.NODE_ENV !== 'production' && (
+                <Button
+                  className="mt-4 bg-red-600 text-white hover:bg-red-700 font-mono text-lg px-6 py-3 rounded-lg border-2 border-red-800 shadow-lg"
+                  onClick={() => navigate('/debug-technotype')}
+                >
+                  Debug: Go to Technotype Generation
+                </Button>
+              )}
+            </>
           )}
         </div>
       </motion.div>
