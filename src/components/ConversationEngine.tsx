@@ -92,6 +92,16 @@ const archetypes = [
   { id: "unplugger", name: "The Unplugger", color: "#0FA0CE" }
 ];
 
+// Add a default set of technotype attributes and real-life changes for the skill tree
+const defaultAttributes = [
+  { id: 1, label: "No screens before bed", description: "Wind down without digital devices for better sleep." },
+  { id: 2, label: "Mindful notifications", description: "Limit notifications to reduce distractions." },
+  { id: 3, label: "Tech-free meals", description: "Keep meals device-free to foster presence." },
+  { id: 4, label: "Scheduled breaks", description: "Take regular breaks from screens to recharge." },
+  { id: 5, label: "Curated content", description: "Consume content that aligns with your values." },
+  { id: 6, label: "Intentional social", description: "Prioritize meaningful digital interactions." },
+];
+
 const ConversationEngine: React.FC = () => {
   const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -107,6 +117,11 @@ const ConversationEngine: React.FC = () => {
   const [userArchetype, setUserArchetype] = useState<string>("optimizer");
   const [technotypeDescription, setTechnotypeDescription] = useState<string>("");
   const [isZooming, setIsZooming] = useState(false);
+  const [technotypeSummary, setTechnotypeSummary] = useState<string>("");
+  const [showLearnMorePrompt, setShowLearnMorePrompt] = useState(false);
+  const [showSkillTree, setShowSkillTree] = useState(false);
+  const [clickedAttributes, setClickedAttributes] = useState<number[]>([]);
+  const [showSignup, setShowSignup] = useState(false);
 
   const handlePathSelection = (path: 1 | 2, userInfo: UserInfo) => {
     setUserInfo(userInfo);
@@ -133,9 +148,10 @@ const ConversationEngine: React.FC = () => {
     }
   };
 
-  const handleConversationalComplete = (technotype: string, description: string) => {
+  const handleConversationalComplete = (technotype: string, description: string, summary: string) => {
     setUserArchetype(technotype);
     setTechnotypeDescription(description);
+    setTechnotypeSummary(summary);
     setPhase('results');
     setIsFinished(true);
   };
@@ -155,6 +171,13 @@ const ConversationEngine: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [currentQuestion]);
+
+  useEffect(() => {
+    if (phase === 'results' && showReveal) {
+      const timer = setTimeout(() => setShowLearnMorePrompt(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, showReveal]);
 
   const handleOptionSelect = async (option: string) => {
     const questionId = quizQuestions[currentQuestion].id;
@@ -260,6 +283,23 @@ const ConversationEngine: React.FC = () => {
     }, 500);
   };
 
+  const handleLearnMore = () => {
+    setShowSkillTree(true);
+  };
+
+  const handleAttributeClick = (id: number) => {
+    if (!clickedAttributes.includes(id)) {
+      setClickedAttributes([...clickedAttributes, id]);
+    }
+  };
+
+  useEffect(() => {
+    if (showSkillTree && clickedAttributes.length === defaultAttributes.length) {
+      const timer = setTimeout(() => setShowSignup(true), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [showSkillTree, clickedAttributes]);
+
   const renderQuestion = () => {
     if (currentQuestion >= quizQuestions.length) return null;
     
@@ -308,6 +348,45 @@ const ConversationEngine: React.FC = () => {
   };
 
   const renderResults = () => {
+    if (showSignup) {
+      return (
+        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-8 text-terminal-accent">Join Clearspace</h2>
+            <p className="text-lg text-terminal-light/80 mb-8">Sign up to continue your digital wellbeing journey and unlock more personalized insights.</p>
+            {/* Replace with your signup form or link */}
+            <button className="bg-terminal-accent text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-terminal-accent/80 transition">Sign Up</button>
+          </div>
+        </div>
+      );
+    }
+    if (showSkillTree) {
+      return (
+        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-8 text-terminal-accent">Your Technotype Skill Tree</h2>
+            <div className="grid grid-cols-3 gap-8 mb-8">
+              {defaultAttributes.map(attr => (
+                <motion.div
+                  key={attr.id}
+                  onClick={() => handleAttributeClick(attr.id)}
+                  className={`cursor-pointer rounded-lg border-2 p-6 transition-all duration-300 flex flex-col items-center justify-center font-mono text-lg select-none
+                    ${clickedAttributes.includes(attr.id) ? 'border-terminal-accent bg-terminal-accent/10 shadow-lg animate-glow' : 'border-terminal-accent/40 bg-black/80 hover:bg-terminal-accent/5'}`}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: attr.id * 0.1 }}
+                >
+                  <span className="font-bold text-terminal-accent text-xl mb-2">{attr.label}</span>
+                  <span className="text-terminal-light/80 text-base">{attr.description}</span>
+                </motion.div>
+              ))}
+            </div>
+            <p className="text-terminal-accent/80 text-lg">Click each card to activate your technotype attributes!</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-black text-terminal-light p-8 font-mono">
         <div className="max-w-4xl mx-auto">
@@ -320,7 +399,6 @@ const ConversationEngine: React.FC = () => {
             <h1 className="text-4xl font-bold mb-8 text-terminal-accent">
               Your Technotype Revealed
             </h1>
-            
             {/* Retro Desktop Icon */}
             {!showReveal && (
               <motion.div 
@@ -332,19 +410,43 @@ const ConversationEngine: React.FC = () => {
                 <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
               </motion.div>
             )}
-            
             {/* Archetype Reveal Animation */}
             {showReveal && (
-              <div className="bg-black/80 border border-terminal-accent/50 rounded-lg p-8 mb-8">
-                <h2 className="text-3xl font-bold mb-4 text-terminal-light">
-                  {userArchetype}
+              <div className="bg-black/80 border border-terminal-accent/50 rounded-lg p-8 mb-8 flex flex-col items-center justify-center">
+                <h2 className="text-5xl md:text-6xl font-extrabold mb-4 text-terminal-accent drop-shadow-lg animate-glow">
+                  <AnimatedText text={userArchetype} speed={30} className="text-terminal-accent text-5xl md:text-6xl font-extrabold text-center" />
                 </h2>
-                <p className="text-lg text-terminal-light/80 whitespace-pre-line">
-                  {technotypeDescription}
+                <p className="text-xl text-terminal-light/80 mb-4 font-mono animate-fade-in">
+                  <AnimatedText text={technotypeSummary} speed={22} className="text-terminal-light/80 text-xl text-center" />
                 </p>
+                {showLearnMorePrompt && (
+                  <motion.div
+                    onClick={handleLearnMore}
+                    className="mt-8 flex items-center justify-center gap-3 text-2xl md:text-4xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 cursor-pointer select-none"
+                    animate={{
+                      x: [0, 20, 0, -20, 0],
+                      y: [0, -10, 0, -10, 0]
+                    }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Learn More"
+                  >
+                    <AnimatedText
+                      text="learn more"
+                      speed={30}
+                      className="text-terminal-accent"
+                      bold={false}
+                      noWrap={true}
+                    />
+                  </motion.div>
+                )}
               </div>
             )}
-            
             <Button
               onClick={() => window.location.reload()}
               className="bg-terminal-accent text-black hover:bg-terminal-accent/80"
@@ -529,7 +631,7 @@ const ConversationEngine: React.FC = () => {
   }
 
   if (phase === 'open-conversation') {
-    return <ConversationalQuiz onComplete={handleConversationalComplete} />;
+    return <ConversationalQuiz onComplete={(t, d, s) => handleConversationalComplete(t, d, s)} />;
   }
 
   if (phase === 'results') {

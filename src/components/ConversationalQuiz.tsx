@@ -16,7 +16,7 @@ import {
 import { generateNextQuestion, generateTechnotypeFromConversation, ConversationMessage } from "@/lib/openai";
 
 interface ConversationalQuizProps {
-  onComplete: (technotype: string, description: string) => void;
+  onComplete: (technotype: string, description: string, summary: string) => void;
 }
 
 const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) => {
@@ -39,9 +39,9 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
     try {
       setIsLoading(true);
       setError(null);
-      const question = await generateNextQuestion(conversationHistory, 0);
+      const question = await generateNextQuestion([], 0);
       setCurrentQuestion(question);
-      setConversationHistory([{ role: 'assistant' as const, content: question }]);
+      setConversationHistory([]); // Start with empty history
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize quiz');
     } finally {
@@ -78,7 +78,7 @@ const ConversationalQuiz: React.FC<ConversationalQuizProps> = ({ onComplete }) =
       // If we've reached 10 questions, generate the technotype
       if (newHistory.length >= 10) {
         const result = await generateTechnotypeFromConversation(newHistory);
-        onComplete(result.technotype, result.description);
+        onComplete(result.technotype, result.description, result.summary);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate next question');

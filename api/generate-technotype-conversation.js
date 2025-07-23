@@ -20,11 +20,13 @@ ${conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
 Generate a technotype result with:
 1. A technotype name (e.g., "Digital Nomad", "Tech Traditionalist", "Cyber Explorer")
 2. A detailed description of this technotype (2-3 paragraphs)
+3. A brief, engaging, one-sentence summary of the technotype for use as a subtitle
 
 Format your response as JSON:
 {
   "technotype": "Technotype Name",
-  "description": "Detailed description..."
+  "description": "Detailed description...",
+  "summary": "One-sentence summary..."
 }`;
 
     const completion = await openai.chat.completions.create({
@@ -41,7 +43,8 @@ Format your response as JSON:
     } catch (parseError) {
       res.json({
         technotype: "Digital Explorer",
-        description: content || "A technology enthusiast who embraces digital innovation and adapts quickly to new tools and platforms."
+        description: content || "A technology enthusiast who embraces digital innovation and adapts quickly to new tools and platforms.",
+        summary: "A curious explorer who thrives on digital innovation."
       });
     }
   } catch (error) {

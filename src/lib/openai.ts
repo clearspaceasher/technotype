@@ -12,6 +12,7 @@ export interface ConversationMessage {
 export interface TechnotypeResult {
   technotype: string;
   description: string;
+  summary: string;
 }
 
 // Dynamic API base URL that works both locally and in production
