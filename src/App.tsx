@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import DebugTechnotype from "./pages/DebugTechnotype";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +19,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/quiz" element={<Index />} />
-          <Route path="/debug-technotype" element={<DebugTechnotype />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

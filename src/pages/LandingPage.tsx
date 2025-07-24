@@ -133,13 +133,14 @@ const LandingPage: React.FC = () => {
                   </motion.div>
                 </a>
               </motion.div>
-              {/* Debug Button - Always show for debugging */}
-              <Button
-                className="mt-4 bg-red-600 text-white hover:bg-red-700 font-mono text-lg px-6 py-3 rounded-lg border-2 border-red-800 shadow-lg"
-                onClick={() => navigate('/debug-technotype')}
+              <a
+                href="https://clearspace.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-terminal-accent hover:text-terminal-light transition-colors duration-200"
               >
-                Debug: Go to Technotype Generation
-              </Button>
+                clearspace.com
+              </a>
             </>
           )}
         </div>
