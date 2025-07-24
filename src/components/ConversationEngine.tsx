@@ -403,10 +403,10 @@ const ConversationEngine: React.FC = () => {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8 text-terminal-accent">Your Technotype Skill Tree</h2>
-            <div className="relative">
+            <h2 className="text-3xl font-bold mb-4 text-terminal-accent">{userArchetype} Attributes</h2>
+            <div className="relative -mt-8">
               {/* Skill Tree Structure */}
-              <div className="grid grid-cols-7 gap-4 mb-8">
+              <div className="grid grid-cols-7 gap-6 mb-8">
                 {/* Row 1 - Center node */}
                 <div className="col-start-4">
                   <motion.div
@@ -418,7 +418,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[0].title}</span>
                       {expandedHexagons.includes(0) && (
                         <motion.div
@@ -445,7 +445,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[1].title}</span>
                       {expandedHexagons.includes(1) && (
                         <motion.div
@@ -470,7 +470,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[2].title}</span>
                       {expandedHexagons.includes(2) && (
                         <motion.div
@@ -495,7 +495,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.3 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[3].title}</span>
                       {expandedHexagons.includes(3) && (
                         <motion.div
@@ -522,7 +522,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.4 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[4].title}</span>
                       {expandedHexagons.includes(4) && (
                         <motion.div
@@ -547,7 +547,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.5 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[5].title}</span>
                       {expandedHexagons.includes(5) && (
                         <motion.div
@@ -572,7 +572,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.6 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[6].title}</span>
                       {expandedHexagons.includes(6) && (
                         <motion.div
@@ -597,7 +597,7 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.7 }}
                   >
-                    <div className="text-center">
+                    <div className="text-center px-2">
                       <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[7].title}</span>
                       {expandedHexagons.includes(7) && (
                         <motion.div
@@ -632,7 +632,7 @@ const ConversationEngine: React.FC = () => {
                 <line x1="55%" y1="40%" x2="65%" y2="60%" stroke="url(#lineGradient)" strokeWidth="2" />
               </svg>
             </div>
-            <p className="text-terminal-accent/80 text-lg">Click each hexagon to unlock your technotype attributes!</p>
+            <p className="text-terminal-accent/80 text-lg">Unlock all attributes to discover your digital transformation path</p>
           </div>
         </div>
       );
@@ -658,18 +658,17 @@ const ConversationEngine: React.FC = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl font-bold mb-8 text-terminal-accent">
-              Technotype:
-            </h1>
             {/* Retro Desktop Icon */}
             {!showReveal && (
               <motion.div 
-                className="flex justify-center items-center py-12"
+                className="flex justify-center items-center py-24"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
+                <div className="scale-150">
+                  <PixelIcon onClick={handleIconClick} clickCount={iconClicked} />
+                </div>
               </motion.div>
             )}
             {/* Archetype Reveal Animation */}
@@ -684,13 +683,13 @@ const ConversationEngine: React.FC = () => {
                 {showLearnMorePrompt && (
                   <motion.div
                     onClick={handleLearnMore}
-                    className="mt-8 flex items-center justify-center gap-3 text-4xl md:text-6xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 cursor-pointer select-none"
+                    className="mt-16 flex items-center justify-center gap-3 text-5xl md:text-7xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 cursor-pointer select-none"
                     animate={{
-                      x: [0, 20, 0, -20, 0],
-                      y: [0, -10, 0, -10, 0]
+                      x: [0, 30, 0, -30, 0],
+                      y: [0, -15, 0, -15, 0]
                     }}
                     transition={{
-                      duration: 8,
+                      duration: 6,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
