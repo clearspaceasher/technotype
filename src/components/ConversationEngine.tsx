@@ -412,7 +412,7 @@ const ConversationEngine: React.FC = () => {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 text-terminal-accent -mt-16">{userArchetype} Attributes</h2>
+            <h2 className="text-3xl font-bold mb-4 text-terminal-accent -mt-24">{userArchetype} Attributes</h2>
             <div className="relative -mt-8">
               {/* Skill Tree Structure */}
               <div className="grid grid-cols-7 gap-6 mb-8">
