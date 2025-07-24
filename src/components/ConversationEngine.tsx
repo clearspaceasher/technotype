@@ -119,50 +119,50 @@ const ConversationEngine: React.FC = () => {
     {
       id: 0,
       title: "Digital Focus",
-      description: "Master the art of intentional technology use",
-      benefit: "Improved productivity and reduced digital overwhelm"
+      description: "Set specific goals for each tech session",
+      benefit: "Boost productivity by 40%"
     },
     {
       id: 1,
       title: "No Screens Before Bed",
-      description: "Create a 1-hour screen-free buffer before sleep",
-      benefit: "Better sleep quality and improved circadian rhythm"
+      description: "Stop using devices 1 hour before sleep",
+      benefit: "Improve sleep quality instantly"
     },
     {
       id: 2,
       title: "Intentional Usage",
-      description: "Set specific purposes for each tech session",
-      benefit: "Reduced mindless scrolling and increased fulfillment"
+      description: "Check your phone with purpose, not habit",
+      benefit: "Reduce screen time by 30%"
     },
     {
       id: 3,
       title: "Digital Boundaries",
-      description: "Establish clear limits on device usage",
-      benefit: "Stronger relationships and better work-life balance"
+      description: "Set daily limits on app usage",
+      benefit: "Create more meaningful relationships"
     },
     {
       id: 4,
       title: "Mindful Consumption",
-      description: "Consciously choose what content to engage with",
-      benefit: "Reduced anxiety and more meaningful online experiences"
+      description: "Choose content that adds value to your life",
+      benefit: "Reduce anxiety and stress"
     },
     {
       id: 5,
       title: "Tech Balance",
-      description: "Find harmony between digital and analog activities",
-      benefit: "Enhanced creativity and reduced digital dependency"
+      description: "Spend equal time on digital and analog activities",
+      benefit: "Enhance creativity and focus"
     },
     {
       id: 6,
       title: "Digital Wellness",
-      description: "Prioritize mental health in the digital age",
-      benefit: "Improved mood and reduced screen fatigue"
+      description: "Take regular breaks from screens",
+      benefit: "Improve mental clarity"
     },
     {
       id: 7,
       title: "Smart Habits",
-      description: "Build sustainable technology routines",
-      benefit: "Long-term digital wellbeing and life satisfaction"
+      description: "Build consistent daily tech routines",
+      benefit: "Achieve long-term digital wellbeing"
     }
   ];
 
@@ -331,6 +331,8 @@ const ConversationEngine: React.FC = () => {
   };
 
   const handleAttributeClick = (id: number) => {
+    console.log('Attribute clicked:', id, 'Current clicked attributes:', clickedAttributes);
+    
     // Toggle expansion
     if (expandedHexagons.includes(id)) {
       setExpandedHexagons(expandedHexagons.filter(hex => hex !== id));
@@ -340,13 +342,20 @@ const ConversationEngine: React.FC = () => {
     
     // Toggle activation
     if (!clickedAttributes.includes(id)) {
-      setClickedAttributes([...clickedAttributes, id]);
+      const newClickedAttributes = [...clickedAttributes, id];
+      console.log('Adding attribute', id, 'New array:', newClickedAttributes);
+      setClickedAttributes(newClickedAttributes);
     }
   };
 
   useEffect(() => {
+    console.log('Skill tree state:', { showSkillTree, clickedAttributes: clickedAttributes.length });
     if (showSkillTree && clickedAttributes.length === 8) {
-      const timer = setTimeout(() => setShowSignup(true), 1200);
+      console.log('All attributes clicked, transitioning to signup...');
+      const timer = setTimeout(() => {
+        console.log('Setting showSignup to true');
+        setShowSignup(true);
+      }, 1200);
       return () => clearTimeout(timer);
     }
   }, [showSkillTree, clickedAttributes]);
