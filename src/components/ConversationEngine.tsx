@@ -494,7 +494,7 @@ const ConversationEngine: React.FC = () => {
                   <div className="text-center">
                     <span className="text-terminal-accent text-2xl">✓</span>
                     <AnimatedText 
-                      text="Email submitted successfully! Your personalized plan is on its way." 
+                      text="submitted successfully your plan is on its way" 
                       speed={20} 
                       className="text-terminal-light text-lg mt-2 block"
                     />
@@ -519,8 +519,8 @@ const ConversationEngine: React.FC = () => {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 text-terminal-accent -mt-24">{userArchetype} Attributes</h2>
-            <div className="relative -mt-8">
+            <h2 className="text-3xl font-bold mb-4 text-terminal-accent">{userArchetype} Attributes</h2>
+            <div className="relative">
               {attributesLoading ? (
                 <div className="flex justify-center items-center py-12">
                   <AnimatedText text="Generating your personalized attributes..." speed={20} className="text-terminal-accent" />
@@ -780,7 +780,7 @@ const ConversationEngine: React.FC = () => {
                 </>
               )}
             </div>
-            <p className="text-terminal-accent/80 text-lg">Unlock all attributes to discover your digital transformation path</p>
+            <p className="text-terminal-accent/80 text-lg">Click on each attribute to unlock your digital transformation path</p>
           </div>
         </div>
       );
