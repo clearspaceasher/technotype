@@ -457,7 +457,7 @@ const ConversationEngine: React.FC = () => {
               <h2 className="text-4xl font-bold mb-8 text-terminal-accent">Digital Transformation Awaits</h2>
               <div className="text-lg text-terminal-light/80 mb-8 space-y-4">
                 <AnimatedText 
-                  text="Get your personalized digital wellbeing plan delivered to your inbox." 
+                  text="Ready to unlock your digital transformation? Enter your email below." 
                   speed={20} 
                   className="text-terminal-light/80 text-lg"
                 />
