@@ -51,4 +51,33 @@
   .text-glow {
     text-shadow: 0 0 5px theme('colors.terminal.accent');
   }
+  
+  .hexagon {
+    width: 120px;
+    height: 104px;
+    position: relative;
+    background: transparent;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  
+  .hexagon-inactive {
+    background: rgba(0, 255, 0, 0.1);
+    border: 2px solid rgba(0, 255, 0, 0.3);
+  }
+  
+  .hexagon-active {
+    background: rgba(0, 255, 0, 0.2);
+    border: 2px solid rgba(0, 255, 0, 0.8);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+    to {
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+    }
+  }
 }

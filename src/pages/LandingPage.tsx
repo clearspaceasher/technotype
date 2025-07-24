@@ -133,15 +133,15 @@ const LandingPage: React.FC = () => {
                   </motion.div>
                 </a>
               </motion.div>
-              <a
-                href="https://clearspace.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-terminal-accent hover:text-terminal-light transition-colors duration-200"
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-terminal-accent/60 text-sm mt-4"
               >
-                clearspace.com
-              </a>
-            </>
+                powered by
+              </motion.div>
+            </motion.div>
           )}
         </div>
       </motion.div>

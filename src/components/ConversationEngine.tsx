@@ -122,6 +122,59 @@ const ConversationEngine: React.FC = () => {
   const [showSkillTree, setShowSkillTree] = useState(false);
   const [clickedAttributes, setClickedAttributes] = useState<number[]>([]);
   const [showSignup, setShowSignup] = useState(false);
+  const [expandedHexagons, setExpandedHexagons] = useState<number[]>([]);
+
+  // Attribute details for the skill tree
+  const attributeDetails = [
+    {
+      id: 0,
+      title: "Digital Focus",
+      description: "Master the art of intentional technology use",
+      benefit: "Improved productivity and reduced digital overwhelm"
+    },
+    {
+      id: 1,
+      title: "No Screens Before Bed",
+      description: "Create a 1-hour screen-free buffer before sleep",
+      benefit: "Better sleep quality and improved circadian rhythm"
+    },
+    {
+      id: 2,
+      title: "Intentional Usage",
+      description: "Set specific purposes for each tech session",
+      benefit: "Reduced mindless scrolling and increased fulfillment"
+    },
+    {
+      id: 3,
+      title: "Digital Boundaries",
+      description: "Establish clear limits on device usage",
+      benefit: "Stronger relationships and better work-life balance"
+    },
+    {
+      id: 4,
+      title: "Mindful Consumption",
+      description: "Consciously choose what content to engage with",
+      benefit: "Reduced anxiety and more meaningful online experiences"
+    },
+    {
+      id: 5,
+      title: "Tech Balance",
+      description: "Find harmony between digital and analog activities",
+      benefit: "Enhanced creativity and reduced digital dependency"
+    },
+    {
+      id: 6,
+      title: "Digital Wellness",
+      description: "Prioritize mental health in the digital age",
+      benefit: "Improved mood and reduced screen fatigue"
+    },
+    {
+      id: 7,
+      title: "Smart Habits",
+      description: "Build sustainable technology routines",
+      benefit: "Long-term digital wellbeing and life satisfaction"
+    }
+  ];
 
   const handlePathSelection = (path: 1 | 2, userInfo: UserInfo) => {
     setUserInfo(userInfo);
@@ -288,13 +341,21 @@ const ConversationEngine: React.FC = () => {
   };
 
   const handleAttributeClick = (id: number) => {
+    // Toggle expansion
+    if (expandedHexagons.includes(id)) {
+      setExpandedHexagons(expandedHexagons.filter(hex => hex !== id));
+    } else {
+      setExpandedHexagons([...expandedHexagons, id]);
+    }
+    
+    // Toggle activation
     if (!clickedAttributes.includes(id)) {
       setClickedAttributes([...clickedAttributes, id]);
     }
   };
 
   useEffect(() => {
-    if (showSkillTree && clickedAttributes.length === defaultAttributes.length) {
+    if (showSkillTree && clickedAttributes.length === 8) {
       const timer = setTimeout(() => setShowSignup(true), 1200);
       return () => clearTimeout(timer);
     }
@@ -348,6 +409,244 @@ const ConversationEngine: React.FC = () => {
   };
 
   const renderResults = () => {
+    if (showSkillTree) {
+      return (
+        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-8 text-terminal-accent">Your Technotype Skill Tree</h2>
+            <div className="relative">
+              {/* Skill Tree Structure */}
+              <div className="grid grid-cols-7 gap-4 mb-8">
+                {/* Row 1 - Center node */}
+                <div className="col-start-4">
+                  <motion.div
+                    onClick={() => handleAttributeClick(0)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(0) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[0].title}</span>
+                      {expandedHexagons.includes(0) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[0].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[0].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                
+                {/* Row 2 - Three nodes */}
+                <div className="col-start-2">
+                  <motion.div
+                    onClick={() => handleAttributeClick(1)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(1) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[1].title}</span>
+                      {expandedHexagons.includes(1) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[1].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[1].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                <div className="col-start-4">
+                  <motion.div
+                    onClick={() => handleAttributeClick(2)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(2) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[2].title}</span>
+                      {expandedHexagons.includes(2) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[2].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[2].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                <div className="col-start-6">
+                  <motion.div
+                    onClick={() => handleAttributeClick(3)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(3) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[3].title}</span>
+                      {expandedHexagons.includes(3) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[3].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[3].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                
+                {/* Row 3 - Five nodes */}
+                <div className="col-start-1">
+                  <motion.div
+                    onClick={() => handleAttributeClick(4)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(4) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[4].title}</span>
+                      {expandedHexagons.includes(4) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[4].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[4].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                <div className="col-start-3">
+                  <motion.div
+                    onClick={() => handleAttributeClick(5)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(5) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[5].title}</span>
+                      {expandedHexagons.includes(5) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[5].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[5].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                <div className="col-start-5">
+                  <motion.div
+                    onClick={() => handleAttributeClick(6)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(6) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[6].title}</span>
+                      {expandedHexagons.includes(6) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[6].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[6].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+                <div className="col-start-7">
+                  <motion.div
+                    onClick={() => handleAttributeClick(7)}
+                    className={`hexagon cursor-pointer transition-all duration-300 flex items-center justify-center font-mono text-lg select-none
+                      ${clickedAttributes.includes(7) ? 'hexagon-active' : 'hexagon-inactive'}`}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                  >
+                    <div className="text-center">
+                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[7].title}</span>
+                      {expandedHexagons.includes(7) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-2 text-xs text-terminal-light/80"
+                        >
+                          <div className="mb-1">{attributeDetails[7].description}</div>
+                          <div className="text-terminal-accent/60">{attributeDetails[7].benefit}</div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+              
+              {/* Connection Lines */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: -1 }}>
+                <defs>
+                  <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#00ff00" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#00ff00" stopOpacity="0.8" />
+                  </linearGradient>
+                </defs>
+                {/* Add connection lines between hexagons */}
+                <line x1="25%" y1="20%" x2="15%" y2="40%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="25%" y1="20%" x2="35%" y2="40%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="25%" y1="20%" x2="55%" y2="40%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="15%" y1="40%" x2="10%" y2="60%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="35%" y1="40%" x2="25%" y2="60%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="55%" y1="40%" x2="45%" y2="60%" stroke="url(#lineGradient)" strokeWidth="2" />
+                <line x1="55%" y1="40%" x2="65%" y2="60%" stroke="url(#lineGradient)" strokeWidth="2" />
+              </svg>
+            </div>
+            <p className="text-terminal-accent/80 text-lg">Click each hexagon to unlock your technotype attributes!</p>
+          </div>
+        </div>
+      );
+    }
     if (showSignup) {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
@@ -356,33 +655,6 @@ const ConversationEngine: React.FC = () => {
             <p className="text-lg text-terminal-light/80 mb-8">Sign up to continue your digital wellbeing journey and unlock more personalized insights.</p>
             {/* Replace with your signup form or link */}
             <button className="bg-terminal-accent text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-terminal-accent/80 transition">Sign Up</button>
-          </div>
-        </div>
-      );
-    }
-    if (showSkillTree) {
-      return (
-        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8 text-terminal-accent">Your Technotype Skill Tree</h2>
-            <div className="grid grid-cols-3 gap-8 mb-8">
-              {defaultAttributes.map(attr => (
-                <motion.div
-                  key={attr.id}
-                  onClick={() => handleAttributeClick(attr.id)}
-                  className={`cursor-pointer rounded-lg border-2 p-6 transition-all duration-300 flex flex-col items-center justify-center font-mono text-lg select-none
-                    ${clickedAttributes.includes(attr.id) ? 'border-terminal-accent bg-terminal-accent/10 shadow-lg animate-glow' : 'border-terminal-accent/40 bg-black/80 hover:bg-terminal-accent/5'}`}
-                  whileTap={{ scale: 0.97 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: attr.id * 0.1 }}
-                >
-                  <span className="font-bold text-terminal-accent text-xl mb-2">{attr.label}</span>
-                  <span className="text-terminal-light/80 text-base">{attr.description}</span>
-                </motion.div>
-              ))}
-            </div>
-            <p className="text-terminal-accent/80 text-lg">Click each card to activate your technotype attributes!</p>
           </div>
         </div>
       );
@@ -397,7 +669,7 @@ const ConversationEngine: React.FC = () => {
             className="text-center"
           >
             <h1 className="text-4xl font-bold mb-8 text-terminal-accent">
-              Your Technotype Revealed
+              Technotype:
             </h1>
             {/* Retro Desktop Icon */}
             {!showReveal && (
@@ -412,7 +684,7 @@ const ConversationEngine: React.FC = () => {
             )}
             {/* Archetype Reveal Animation */}
             {showReveal && (
-              <div className="bg-black/80 border border-terminal-accent/50 rounded-lg p-8 mb-8 flex flex-col items-center justify-center">
+              <div className="bg-black/80 p-8 mb-8 flex flex-col items-center justify-center">
                 <h2 className="text-5xl md:text-6xl font-extrabold mb-4 text-terminal-accent drop-shadow-lg animate-glow">
                   <AnimatedText text={userArchetype} speed={30} className="text-terminal-accent text-5xl md:text-6xl font-extrabold text-center" />
                 </h2>
@@ -422,7 +694,7 @@ const ConversationEngine: React.FC = () => {
                 {showLearnMorePrompt && (
                   <motion.div
                     onClick={handleLearnMore}
-                    className="mt-8 flex items-center justify-center gap-3 text-2xl md:text-4xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 cursor-pointer select-none"
+                    className="mt-8 flex items-center justify-center gap-3 text-4xl md:text-6xl text-terminal-accent font-mono hover:text-glow transition-all duration-300 transform hover:scale-105 cursor-pointer select-none"
                     animate={{
                       x: [0, 20, 0, -20, 0],
                       y: [0, -10, 0, -10, 0]
@@ -447,12 +719,6 @@ const ConversationEngine: React.FC = () => {
                 )}
               </div>
             )}
-            <Button
-              onClick={() => window.location.reload()}
-              className="bg-terminal-accent text-black hover:bg-terminal-accent/80"
-            >
-              Start Over
-            </Button>
           </motion.div>
         </div>
       </div>
