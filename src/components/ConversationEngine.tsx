@@ -92,16 +92,6 @@ const archetypes = [
   { id: "unplugger", name: "The Unplugger", color: "#0FA0CE" }
 ];
 
-// Add a default set of technotype attributes and real-life changes for the skill tree
-const defaultAttributes = [
-  { id: 1, label: "No screens before bed", description: "Wind down without digital devices for better sleep." },
-  { id: 2, label: "Mindful notifications", description: "Limit notifications to reduce distractions." },
-  { id: 3, label: "Tech-free meals", description: "Keep meals device-free to foster presence." },
-  { id: 4, label: "Scheduled breaks", description: "Take regular breaks from screens to recharge." },
-  { id: 5, label: "Curated content", description: "Consume content that aligns with your values." },
-  { id: 6, label: "Intentional social", description: "Prioritize meaningful digital interactions." },
-];
-
 const ConversationEngine: React.FC = () => {
   const [phase, setPhase] = useState<'path-selection' | 'guided-transition' | 'open-transition' | 'guided-quiz' | 'open-conversation' | 'results'>('path-selection');
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);

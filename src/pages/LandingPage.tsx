@@ -141,7 +141,7 @@ const LandingPage: React.FC = () => {
               >
                 powered by
               </motion.div>
-            </motion.div>
+            </>
           )}
         </div>
       </motion.div>
