@@ -403,7 +403,7 @@ const ConversationEngine: React.FC = () => {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4 text-terminal-accent">{userArchetype} Attributes</h2>
+            <h2 className="text-3xl font-bold mb-4 text-terminal-accent -mt-16">{userArchetype} Attributes</h2>
             <div className="relative -mt-8">
               {/* Skill Tree Structure */}
               <div className="grid grid-cols-7 gap-6 mb-8">
@@ -418,15 +418,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[0].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[0].title}</span>
                       {expandedHexagons.includes(0) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[0].description}</div>
+                          <div className="mb-2">{attributeDetails[0].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[0].benefit}</div>
                         </motion.div>
                       )}
@@ -445,15 +445,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[1].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[1].title}</span>
                       {expandedHexagons.includes(1) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[1].description}</div>
+                          <div className="mb-2">{attributeDetails[1].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[1].benefit}</div>
                         </motion.div>
                       )}
@@ -470,15 +470,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.2 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[2].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[2].title}</span>
                       {expandedHexagons.includes(2) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[2].description}</div>
+                          <div className="mb-2">{attributeDetails[2].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[2].benefit}</div>
                         </motion.div>
                       )}
@@ -495,15 +495,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.3 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[3].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[3].title}</span>
                       {expandedHexagons.includes(3) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[3].description}</div>
+                          <div className="mb-2">{attributeDetails[3].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[3].benefit}</div>
                         </motion.div>
                       )}
@@ -522,15 +522,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.4 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[4].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[4].title}</span>
                       {expandedHexagons.includes(4) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[4].description}</div>
+                          <div className="mb-2">{attributeDetails[4].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[4].benefit}</div>
                         </motion.div>
                       )}
@@ -547,15 +547,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.5 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[5].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[5].title}</span>
                       {expandedHexagons.includes(5) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[5].description}</div>
+                          <div className="mb-2">{attributeDetails[5].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[5].benefit}</div>
                         </motion.div>
                       )}
@@ -572,15 +572,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.6 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[6].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[6].title}</span>
                       {expandedHexagons.includes(6) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[6].description}</div>
+                          <div className="mb-2">{attributeDetails[6].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[6].benefit}</div>
                         </motion.div>
                       )}
@@ -597,15 +597,15 @@ const ConversationEngine: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.7 }}
                   >
-                    <div className="text-center px-2">
-                      <span className="font-bold text-terminal-accent text-sm block">{attributeDetails[7].title}</span>
+                    <div className="text-center px-4">
+                      <span className="font-bold text-terminal-accent text-base block">{attributeDetails[7].title}</span>
                       {expandedHexagons.includes(7) && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="mt-2 text-xs text-terminal-light/80"
+                          className="mt-3 text-sm text-terminal-light/80"
                         >
-                          <div className="mb-1">{attributeDetails[7].description}</div>
+                          <div className="mb-2">{attributeDetails[7].description}</div>
                           <div className="text-terminal-accent/60">{attributeDetails[7].benefit}</div>
                         </motion.div>
                       )}
@@ -661,7 +661,7 @@ const ConversationEngine: React.FC = () => {
             {/* Retro Desktop Icon */}
             {!showReveal && (
               <motion.div 
-                className="flex justify-center items-center py-24"
+                className="flex justify-center items-center min-h-screen"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
@@ -673,7 +673,7 @@ const ConversationEngine: React.FC = () => {
             )}
             {/* Archetype Reveal Animation */}
             {showReveal && (
-              <div className="bg-black/80 p-8 mb-8 flex flex-col items-center justify-center">
+              <div className="min-h-screen flex flex-col items-center justify-center">
                 <h2 className="text-5xl md:text-6xl font-extrabold mb-4 text-terminal-accent drop-shadow-lg animate-glow">
                   <AnimatedText text={userArchetype} speed={30} className="text-terminal-accent text-5xl md:text-6xl font-extrabold text-center" />
                 </h2>
