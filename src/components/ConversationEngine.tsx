@@ -331,8 +331,6 @@ const ConversationEngine: React.FC = () => {
   };
 
   const handleAttributeClick = (id: number) => {
-    console.log('Attribute clicked:', id, 'Current clicked attributes:', clickedAttributes);
-    
     // Toggle expansion
     if (expandedHexagons.includes(id)) {
       setExpandedHexagons(expandedHexagons.filter(hex => hex !== id));
@@ -343,17 +341,13 @@ const ConversationEngine: React.FC = () => {
     // Toggle activation
     if (!clickedAttributes.includes(id)) {
       const newClickedAttributes = [...clickedAttributes, id];
-      console.log('Adding attribute', id, 'New array:', newClickedAttributes);
       setClickedAttributes(newClickedAttributes);
     }
   };
 
   useEffect(() => {
-    console.log('Skill tree state:', { showSkillTree, clickedAttributes: clickedAttributes.length });
     if (showSkillTree && clickedAttributes.length === 8) {
-      console.log('All attributes clicked, transitioning to signup...');
       const timer = setTimeout(() => {
-        console.log('Setting showSignup to true');
         setShowSignup(true);
       }, 1200);
       return () => clearTimeout(timer);
@@ -408,6 +402,63 @@ const ConversationEngine: React.FC = () => {
   };
 
   const renderResults = () => {
+    if (showSignup) {
+      return (
+        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
+          <div className="max-w-2xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-4xl font-bold mb-8 text-terminal-accent">Your Digital Transformation Awaits</h2>
+              <div className="text-lg text-terminal-light/80 mb-8 space-y-4">
+                <AnimatedText 
+                  text="Congratulations! You've unlocked your complete technotype profile." 
+                  speed={20} 
+                  className="text-terminal-light/80 text-lg"
+                />
+                <AnimatedText 
+                  text="Get your personalized digital wellbeing plan delivered to your inbox." 
+                  speed={20} 
+                  className="text-terminal-light/80 text-lg"
+                />
+              </div>
+              
+              <div className="bg-terminal-accent/10 border border-terminal-accent/30 rounded-lg p-6 mb-8">
+                <div className="text-left mb-4">
+                  <span className="text-terminal-accent">$ </span>
+                  <AnimatedText 
+                    text="Enter your email to receive your full technotype analysis:" 
+                    speed={15} 
+                    className="text-terminal-light inline"
+                  />
+                </div>
+                <div className="flex gap-4">
+                  <input 
+                    type="email" 
+                    placeholder="your@email.com"
+                    className="flex-1 bg-black border border-terminal-accent/50 rounded px-4 py-3 text-terminal-light font-mono focus:outline-none focus:border-terminal-accent"
+                  />
+                  <button className="bg-terminal-accent text-black px-6 py-3 rounded font-bold font-mono hover:bg-terminal-accent/80 transition">
+                    Get Plan →
+                  </button>
+                </div>
+              </div>
+              
+              <div className="text-terminal-accent/60 text-sm">
+                <AnimatedText 
+                  text="Your privacy is protected. We'll only send you your personalized plan." 
+                  speed={25} 
+                  className="text-terminal-accent/60 text-sm"
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      );
+    }
+    
     if (showSkillTree) {
       return (
         <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
@@ -642,18 +693,6 @@ const ConversationEngine: React.FC = () => {
               </svg>
             </div>
             <p className="text-terminal-accent/80 text-lg">Unlock all attributes to discover your digital transformation path</p>
-          </div>
-        </div>
-      );
-    }
-    if (showSignup) {
-      return (
-        <div className="min-h-screen bg-black text-terminal-light p-8 font-mono flex items-center justify-center">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-8 text-terminal-accent">Join Clearspace</h2>
-            <p className="text-lg text-terminal-light/80 mb-8">Sign up to continue your digital wellbeing journey and unlock more personalized insights.</p>
-            {/* Replace with your signup form or link */}
-            <button className="bg-terminal-accent text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-terminal-accent/80 transition">Sign Up</button>
           </div>
         </div>
       );
